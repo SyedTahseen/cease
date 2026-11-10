@@ -49,6 +49,14 @@ jobs:
           mkdir -p dist
           cp app/build/outputs/apk/release/*.apk dist/Freezer.apk
 
+      - name: Verify APK signing key
+        run: |
+          APKSIGNER=$(ls $ANDROID_HOME/build-tools/*/apksigner | sort -V | tail -1)
+          $APKSIGNER verify --print-certs dist/Freezer.apk | tee certs.txt
+          if grep -qi "Android Debug" certs.txt; then
+            echo "::warning::APK is signed with the DEBUG key - secrets not picked up"
+          fi
+
       # archive: false => uploads the .apk as-is (no zip). The artifact
       # name becomes the file name, so the download is Freezer.apk.
       - name: Upload APK (not zipped)
