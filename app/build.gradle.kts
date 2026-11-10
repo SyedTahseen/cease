@@ -17,12 +17,28 @@ android {
         resourceConfigurations += listOf("en")
     }
 
+    signingConfigs {
+        create("release") {
+            val ksPath = System.getenv("KEYSTORE_PATH")
+            if (ksPath != null && file(ksPath).exists()) {
+                storeFile = file(ksPath)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("debug")
+            // Use the real release key when available (GitHub Actions secrets),
+            // otherwise fall back to the debug key so local builds still work.
+            val releaseCfg = signingConfigs.getByName("release")
+            signingConfig = if (releaseCfg.storeFile != null) releaseCfg
+                            else signingConfigs.getByName("debug")
         }
     }
     compileOptions {
