@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Freezer" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:navigationBarColor">#000000</item>
+    </style>
+
+    <style name="Theme.Freezer.Floating">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Activity</item>
+    </style>
+
+    <style name="Theme.Freezer.Normal">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+</resources>
