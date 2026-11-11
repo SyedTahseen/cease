@@ -40,7 +40,7 @@
 
 Cease is a small Android app that lets you **freeze** apps you rarely use. Frozen apps stop running in the background, stop draining your battery and disappear from your app drawer until you need them again.
 
-Pick your apps once. After that, a single slide freezes them all. Tap an app in the grid and Cease unfreezes it and opens it for you.
+Pick your apps once. After that, a single slide can freeze or force stop them all. Tap an app in the grid and Cease unfreezes it and opens it for you.
 
 > [!IMPORTANT]
 > **You need a rooted phone.** Cease uses root access to freeze and unfreeze apps. Without root it can't do its job.
