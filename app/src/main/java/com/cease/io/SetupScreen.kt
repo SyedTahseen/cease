@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import android.Manifest
 import android.content.Context
@@ -157,7 +157,7 @@ private fun BoxScope.WelcomePage(vm: MainViewModel) {
         Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Welcome to Freezer", color = Color.White, fontSize = FZType.display, textAlign = TextAlign.Center)
+        Text("Welcome to Cease", color = Color.White, fontSize = FZType.display, textAlign = TextAlign.Center)
         Spacer(Modifier.height(16.dp))
         Text(
             "A box to freeze and store the apps you rarely use.",
@@ -202,7 +202,7 @@ private fun ChecklistPage(vm: MainViewModel) {
     val items = listOf(
         SetupItem(
             title = "Grant root access",
-            hint = if (rootBusy) "Waiting for your root manager…" else "Required. Tap to allow Freezer in Magisk / KernelSU",
+            hint = if (rootBusy) "Waiting for your root manager…" else "Required. Tap to allow Cease in Magisk / KernelSU",
             state = if (rootGranted) SetupState.OK else SetupState.ERROR,
             onClick = {
                 if (!rootBusy) {
@@ -213,7 +213,7 @@ private fun ChecklistPage(vm: MainViewModel) {
         ),
         SetupItem(
             title = "Allow background running",
-            hint = "On some phones, Freezer needs \"unrestricted background running\" so Auto Freeze keeps working",
+            hint = "On some phones, Cease needs \"unrestricted background running\" so Auto Freeze keeps working",
             state = if (batteryOk) SetupState.OK else SetupState.WARN,
             onClick = {
                 val request = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
@@ -245,16 +245,16 @@ private fun ChecklistPage(vm: MainViewModel) {
 
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 20.dp)) {
-            Text("Set up Freezer", color = Color.White, fontSize = FZType.display, fontWeight = FontWeight.Bold)
+            Text("Set up Cease", color = Color.White, fontSize = FZType.display, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(16.dp))
             Text(
-                "To freeze apps, Freezer needs root access.",
+                "To freeze apps, Cease needs root access.",
                 color = Color.White,
                 fontSize = FZType.body,
             )
             Spacer(Modifier.height(12.dp))
             Text(
-                "Freezer only freezes the apps you choose, and only when you ask it to or when Auto Freeze is on.",
+                "Cease only freezes the apps you choose, and only when you ask it to or when Auto Freeze is on.",
                 color = Color.White.copy(alpha = 0.85f),
                 fontSize = FZType.secondary,
             )
@@ -280,7 +280,7 @@ private fun ChecklistPage(vm: MainViewModel) {
     }
 
     if (rootFailed) {
-        FreezerDialog(
+        CeaseDialog(
             onDismiss = { rootFailed = false },
             title = "Couldn't get root permission",
             containerColor = SetupDialogGrey,
@@ -288,7 +288,7 @@ private fun ChecklistPage(vm: MainViewModel) {
             confirmButton = { DialogButton("OK", { rootFailed = false }) },
         ) {
             Text(
-                "Please ensure your device has been rooted, and allow Freezer in your root manager (Magisk / KernelSU).",
+                "Please ensure your device has been rooted, and allow Cease in your root manager (Magisk / KernelSU).",
                 color = Color.White,
             )
         }
@@ -297,7 +297,7 @@ private fun ChecklistPage(vm: MainViewModel) {
 
 @Composable
 private fun ModeChoice(vm: MainViewModel) {
-    Text("What should Freezer do with your apps?", color = Color.White, fontSize = FZType.title, fontWeight = FontWeight.Medium)
+    Text("What should Cease do with your apps?", color = Color.White, fontSize = FZType.title, fontWeight = FontWeight.Medium)
     Spacer(Modifier.height(4.dp))
     Mode.entries.forEach { m ->
         Row(
@@ -312,7 +312,7 @@ private fun ModeChoice(vm: MainViewModel) {
             Column(Modifier.padding(start = 8.dp, top = 2.dp)) {
                 Text(m.label, color = Color.White, fontSize = FZType.body, fontWeight = FontWeight.Medium)
                 Text(
-                    if (m == Mode.FREEZE) "Disables the app until you open it from Freezer."
+                    if (m == Mode.FREEZE) "Disables the app until you open it from Cease."
                     else "Stops the app and its background work. It stays enabled.",
                     color = Color.White.copy(alpha = 0.85f),
                     fontSize = FZType.secondary,

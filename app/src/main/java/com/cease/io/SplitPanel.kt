@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import androidx.compose.animation.core.animate
 import androidx.compose.foundation.background

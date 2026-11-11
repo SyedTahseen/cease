@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,11 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
@@ -75,7 +75,7 @@ fun HomeScreen(vm: MainViewModel, onClose: () -> Unit) {
                 label = label,
                 enabled = rootOk && !vm.working,
                 style = vm.sliderStyle,
-                onTrackClick = { vm.openPicker() },
+                onLabelClick = { vm.openPicker() },
                 onComplete = {
                     if (vm.slideAction()) {
                         vm.closeGridSearch()
@@ -93,18 +93,18 @@ fun HomeScreen(vm: MainViewModel, onClose: () -> Unit) {
                         IconButton(onClick = { menuOpen = true }) {
                             Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = FZ.c.barIcon)
                         }
-                        FreezerMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                        CeaseMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                             if (!vm.inForceStopTab) {
-                                FreezerMenuItem(
+                                CeaseMenuItem(
                                     text = { Text("Unfreeze all") },
                                     onClick = { menuOpen = false; confirmUnfreeze = true },
                                 )
                             }
-                            FreezerMenuItem(
+                            CeaseMenuItem(
                                 text = { Text("Clear list") },
                                 onClick = { menuOpen = false; vm.clearList() },
                             )
-                            FreezerMenuItem(
+                            CeaseMenuItem(
                                 text = { Text("Settings") },
                                 onClick = { menuOpen = false; vm.openSettings() },
                             )
@@ -125,7 +125,7 @@ fun HomeScreen(vm: MainViewModel, onClose: () -> Unit) {
             if (vm.working) LinearProgressIndicator(Modifier.fillMaxWidth(), color = FZ.c.accent, trackColor = FZ.c.bar)
 
             if (vm.gridSearching) {
-                FreezerSearchField(
+                CeaseSearchField(
                     value = vm.gridQuery,
                     onValueChange = { vm.gridQuery = it },
                     placeholder = "Search in grid…",
@@ -236,16 +236,23 @@ private fun AppTile(app: AppItem, iconSize: IconSizeOption, onClick: () -> Unit,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AppIcon(app.packageName, iconSize.sizeDp.dp, Modifier.alpha(if (app.isStopped) 0.35f else 1f))
-        Text(
-            text = buildAnnotatedString {
-                if (app.isFrozen) withStyle(SpanStyle(color = colors.tabAccent)) { append("❄\uFE0E") }
-                append(app.label)
-            },
-            color = colors.appLabel,
-            fontSize = iconSize.labelSp.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(top = 6.dp),
-        )
+        Row(
+            Modifier.padding(top = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            if (app.isFrozen) {
+                CeaseStarIcon(color = colors.tabAccent, iconSize = (iconSize.labelSp + 1).dp)
+                Spacer(Modifier.width(3.dp))
+            }
+            Text(
+                text = app.label,
+                color = colors.appLabel,
+                fontSize = iconSize.labelSp.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false),
+            )
+        }
     }
 }

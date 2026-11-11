@@ -16,13 +16,13 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
-        android:name=".FreezerApp"
+        android:name=".CeaseApp"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Freezer.Floating">
+        android:theme="@style/Theme.Cease.Floating">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -37,7 +37,7 @@
         <activity
             android:name=".AppActivity"
             android:exported="false"
-            android:theme="@style/Theme.Freezer.Normal"
+            android:theme="@style/Theme.Cease.Normal"
             android:windowSoftInputMode="adjustResize" />
 
         <service

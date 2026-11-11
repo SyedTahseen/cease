@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -66,12 +66,12 @@ fun SettingsScreen(vm: MainViewModel) {
         SectionLabel("Backup")
         SettingRow(
             title = "Back up settings",
-            subtitle = "Save theme, layout, tabs, apps and all settings to a freezer_(date).json file",
+            subtitle = "Save theme, layout, tabs, apps and all settings to a cease_(date).json file",
             onClick = { backupLauncher.launch(backupFileName()) },
         )
         SettingRow(
             title = "Restore settings",
-            subtitle = "Load a Freezer backup file",
+            subtitle = "Load a Cease backup file",
             divider = false,
             onClick = { restoreLauncher.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) },
         )
@@ -82,7 +82,7 @@ fun SettingsScreen(vm: MainViewModel) {
             subtitle = when (vm.rootOk) {
                 null -> "Checking…"
                 true -> "Granted. Tap to re-check."
-                false -> "Not granted. Allow Freezer in Magisk / KernelSU, then tap to re-check."
+                false -> "Not granted. Allow Cease in Magisk / KernelSU, then tap to re-check."
             },
             onClick = { vm.checkRoot() },
         )
@@ -94,11 +94,11 @@ fun SettingsScreen(vm: MainViewModel) {
         )
 
         SectionLabel("About")
-        SettingRow(title = "Version", subtitle = "Freezer $version", divider = false)
+        SettingRow(title = "Version", subtitle = "Cease $version", divider = false)
     }
 
     pendingRestore?.let { uri ->
-        FreezerConfirmDialog(
+        CeaseConfirmDialog(
             message = "Restore this backup? It will replace your current settings, tabs and app list.",
             confirmLabel = "Restore",
             dismissLabel = "Cancel",

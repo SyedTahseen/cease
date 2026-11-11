@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.CheckboxColors
@@ -39,7 +39,7 @@ object FZType {
     val secondary = 14.sp
 }
 
-private val FreezerTypography = Typography(
+private val CeaseTypography = Typography(
     headlineSmall = TextStyle(fontSize = FZType.headline),
     bodyLarge = TextStyle(fontSize = FZType.body),
     bodyMedium = TextStyle(fontSize = FZType.secondary),
@@ -47,7 +47,7 @@ private val FreezerTypography = Typography(
 )
 
 @Immutable
-class FreezerColors(
+class CeaseColors(
     val isDark: Boolean,
     val accent: Color,
     val tabAccent: Color,
@@ -99,7 +99,7 @@ class FreezerColors(
     val switchTrackOff: Color,
 )
 
-private val DarkFreezerColors = FreezerColors(
+private val DarkCeaseColors = CeaseColors(
     isDark = true,
     accent = Color(0xFF1E88E5),
     tabAccent = Color(0xFF0056CD),
@@ -151,7 +151,7 @@ private val DarkFreezerColors = FreezerColors(
     switchTrackOff = Color(0xFF757575),
 )
 
-private val LightFreezerColors = FreezerColors(
+private val LightCeaseColors = CeaseColors(
     isDark = false,
     accent = Color(0xFF0091EA),
     tabAccent = Color(0xFF86A8FF),
@@ -203,11 +203,11 @@ private val LightFreezerColors = FreezerColors(
     switchTrackOff = Color(0xFFBDBDBD),
 )
 
-private val SparkFreezerColors = FreezerColors(
+private val SparkCeaseColors = CeaseColors(
     isDark = true,
-    accent = Color(0xFFACC6FF),
-    tabAccent = Color(0xFFACC6FF),
-    thumb = Color(0xFF2A2C91),
+    accent = Color(0xFF3CBCFD),
+    tabAccent = Color(0xFF3CBCFD),
+    thumb = Color(0xFF0D86EE),
     thumbOff = Color(0xFF45464F),
     track = Color(0xFF16151A),
     panel = Color(0xFF1B1A1F),
@@ -223,16 +223,16 @@ private val SparkFreezerColors = FreezerColors(
     searchIcon = Color(0xFFC4C6D2),
     searchHint = Color(0xFF9A9CA7),
     searchInk = Color(0xFFE0E2EF),
-    pickerTabSelected = Color(0xFFACC6FF),
+    pickerTabSelected = Color(0xFF3CBCFD),
     pickerTabIdle = Color(0xFFC4C6D2),
     row = Color(0xFF1B1A1F),
-    rowFrozen = Color(0xFF1F2F4F),
+    rowFrozen = Color(0xFF1B3358),
     rowTitle = Color(0xFFE0E2EF),
     rowSubtitle = Color(0xFFC4C6D2),
     rowSeparator = Color(0xFF2E2D33),
     checkBorder = Color(0xFF8E909B),
-    checkFill = Color(0xFFACC6FF),
-    checkMark = Color(0xFF002F65),
+    checkFill = Color(0xFF3CBCFD),
+    checkMark = Color(0xFF042247),
     menu = Color(0xFF2B2A30),
     menuInk = Color(0xFFE0E2EF),
     divider = Color(0xFF3A3940),
@@ -240,8 +240,8 @@ private val SparkFreezerColors = FreezerColors(
     sheet = Color(0xFF242329),
     sheetInk = Color(0xFFC4C6D2),
     sheetTitle = Color(0xFFE0E2EF),
-    sheetIconCircle = Color(0xFFACC6FF),
-    sheetIconGlyph = Color(0xFF002F65),
+    sheetIconCircle = Color(0xFF3CBCFD),
+    sheetIconGlyph = Color(0xFF042247),
     settingsBg = Color(0xFF1B1A1F),
     settingsBar = Color(0xFF1B1A1F),
     settingsBarInk = Color(0xFFE0E2EF),
@@ -255,38 +255,38 @@ private val SparkFreezerColors = FreezerColors(
     switchTrackOff = Color(0xFF3A3940),
 )
 
-private val LocalFreezerColors = staticCompositionLocalOf { DarkFreezerColors }
+private val LocalCeaseColors = staticCompositionLocalOf { DarkCeaseColors }
 
 object FZ {
-    val c: FreezerColors
-        @Composable @ReadOnlyComposable get() = LocalFreezerColors.current
+    val c: CeaseColors
+        @Composable @ReadOnlyComposable get() = LocalCeaseColors.current
 }
 
 @Composable
-fun freezerCheckboxColors(): CheckboxColors = CheckboxDefaults.colors(
+fun ceaseCheckboxColors(): CheckboxColors = CheckboxDefaults.colors(
     checkedColor = FZ.c.checkFill,
     uncheckedColor = FZ.c.checkBorder,
     checkmarkColor = FZ.c.checkMark,
 )
 
 @Composable
-fun FreezerTheme(vm: MainViewModel, content: @Composable () -> Unit) {
+fun CeaseTheme(vm: MainViewModel, content: @Composable () -> Unit) {
     val baseDensity = LocalDensity.current
     val appDensity = remember(baseDensity, vm.dpiScale) {
         Density(baseDensity.density * vm.dpiScale, baseDensity.fontScale)
     }
     val c = when (vm.themeMode) {
-        ThemeMode.SYSTEM -> if (isSystemInDarkTheme()) DarkFreezerColors else LightFreezerColors
-        ThemeMode.LIGHT -> LightFreezerColors
-        ThemeMode.DARK -> DarkFreezerColors
-        ThemeMode.SPARK -> SparkFreezerColors
+        ThemeMode.SYSTEM -> if (isSystemInDarkTheme()) DarkCeaseColors else LightCeaseColors
+        ThemeMode.LIGHT -> LightCeaseColors
+        ThemeMode.DARK -> DarkCeaseColors
+        ThemeMode.SPARK -> SparkCeaseColors
     }
     val scheme = if (c.isDark) {
         darkColorScheme(primary = c.accent, background = c.panel, surface = c.menu, onSurface = c.menuInk)
     } else {
         lightColorScheme(primary = c.accent, background = c.panel, surface = c.menu, onSurface = c.menuInk)
     }
-    MaterialTheme(colorScheme = scheme, typography = FreezerTypography) {
-        CompositionLocalProvider(LocalFreezerColors provides c, LocalDensity provides appDensity) { content() }
+    MaterialTheme(colorScheme = scheme, typography = CeaseTypography) {
+        CompositionLocalProvider(LocalCeaseColors provides c, LocalDensity provides appDensity) { content() }
     }
 }

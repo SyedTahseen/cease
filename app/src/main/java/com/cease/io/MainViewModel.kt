@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import android.app.ActivityOptions
 import android.app.Application
@@ -309,7 +309,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 }.getOrNull()
             }
             if (text == null || !prefs.importJson(text)) {
-                message = "Not a valid Freezer backup file"
+                message = "Not a valid Cease backup file"
                 return@launch
             }
             reloadFromPrefs()

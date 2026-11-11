@@ -1,8 +1,13 @@
-package com.freezer.io
+package com.cease.io
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -12,6 +17,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -33,13 +39,18 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kotlin.math.PI
+import kotlin.math.cos
 import kotlin.math.roundToInt
+import kotlin.math.sin
 
 val CenterButtonRise = 28.dp
 
@@ -50,11 +61,11 @@ fun SlideToAct(
     onComplete: () -> Unit,
     modifier: Modifier = Modifier,
     style: SliderStyle = SliderStyle.LEFT,
-    onTrackClick: (() -> Unit)? = null,
+    onLabelClick: (() -> Unit)? = null,
     trailing: @Composable () -> Unit = {},
 ) {
     if (style == SliderStyle.CENTER) {
-        CenterFreezeButton(label, enabled, onComplete, modifier, onTrackClick, trailing)
+        CenterFreezeButton(label, enabled, onComplete, modifier, onLabelClick, trailing)
         return
     }
     val right = style == SliderStyle.RIGHT
@@ -75,7 +86,6 @@ fun SlideToAct(
             .fillMaxWidth()
             .height(trackHeight)
             .background(colors.track)
-            .trackClickable(onTrackClick)
             .onSizeChanged { widthPx = it.width },
         contentAlignment = if (right) Alignment.CenterEnd else Alignment.CenterStart,
     ) {
@@ -90,7 +100,11 @@ fun SlideToAct(
             text = label,
             color = colors.barInk,
             fontSize = FZType.title,
-            modifier = Modifier.align(Alignment.Center).alpha((1f - progress * 1.6f).coerceIn(0f, 1f)),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .alpha((1f - progress * 1.6f).coerceIn(0f, 1f))
+                .labelClickable(onLabelClick)
+                .padding(horizontal = 16.dp, vertical = 14.dp),
         )
 
         Row(
@@ -106,7 +120,7 @@ fun SlideToAct(
                 .offset { IntOffset(sign * offset.value.roundToInt(), 0) }
                 .size(trackHeight)
                 .clip(CircleShape)
-                .background(if (enabled) colors.thumb else colors.thumbOff, CircleShape)
+                .background(colors.thumbOff, CircleShape)
                 .draggable(
                     enabled = enabled,
                     orientation = Orientation.Horizontal,
@@ -121,7 +135,8 @@ fun SlideToAct(
                 ),
             contentAlignment = Alignment.Center,
         ) {
-            SnowflakeIcon(color = Color.White, iconSize = 30.dp)
+            HandleBackground(enabled)
+            CeaseStarIcon(color = Color.White, iconSize = 38.dp)
         }
     }
 }
@@ -132,7 +147,7 @@ private fun CenterFreezeButton(
     enabled: Boolean,
     onComplete: () -> Unit,
     modifier: Modifier,
-    onTrackClick: (() -> Unit)?,
+    onLabelClick: (() -> Unit)?,
     trailing: @Composable () -> Unit,
 ) {
     val colors = FZ.c
@@ -144,13 +159,18 @@ private fun CenterFreezeButton(
     var spinning by remember { mutableStateOf(false) }
 
     Box(modifier.fillMaxWidth().height(barHeight + rise)) {
-        Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(barHeight).background(colors.track).trackClickable(onTrackClick))
+        Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(barHeight).background(colors.track))
 
         Box(
-            Modifier.align(Alignment.BottomStart).height(barHeight).padding(start = 32.dp),
+            Modifier.align(Alignment.BottomStart).height(barHeight).padding(start = 24.dp),
             contentAlignment = Alignment.CenterStart,
         ) {
-            Text(text = label, color = colors.barInk, fontSize = FZType.title)
+            Text(
+                text = label,
+                color = colors.barInk,
+                fontSize = FZType.title,
+                modifier = Modifier.labelClickable(onLabelClick).padding(horizontal = 8.dp, vertical = 14.dp),
+            )
         }
 
         Row(
@@ -164,7 +184,7 @@ private fun CenterFreezeButton(
                 .size(buttonSize)
                 .shadow(4.dp, CircleShape)
                 .clip(CircleShape)
-                .background(if (enabled) colors.thumb else colors.thumbOff, CircleShape)
+                .background(colors.thumbOff, CircleShape)
                 .clickable(enabled = enabled && !spinning) {
                     spinning = true
                     onComplete()
@@ -176,16 +196,54 @@ private fun CenterFreezeButton(
                 },
             contentAlignment = Alignment.Center,
         ) {
-            SnowflakeIcon(Modifier.rotate(rotation.value), Color.White, 30.dp)
+            HandleBackground(enabled)
+            CeaseStarIcon(Modifier.rotate(rotation.value), Color.White, 42.dp)
         }
     }
 }
 
 @Composable
-private fun Modifier.trackClickable(onClick: (() -> Unit)?): Modifier =
+private fun Modifier.labelClickable(onClick: (() -> Unit)?): Modifier =
     if (onClick == null) this
     else this.clickable(
         interactionSource = remember { MutableInteractionSource() },
         indication = null,
         onClick = onClick,
     )
+
+@Composable
+private fun HandleBackground(enabled: Boolean) {
+    if (!enabled) return
+    val transition = rememberInfiniteTransition(label = "handleFlow")
+    val phase by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = (2 * PI).toFloat(),
+        animationSpec = infiniteRepeatable(tween(9000, easing = LinearEasing)),
+        label = "phase",
+    )
+    Canvas(Modifier.fillMaxSize()) {
+        val t = phase
+        val w = size.width
+        drawRect(FlowRoyal)
+        fun blob(color: Color, cx: Float, cy: Float, r: Float) {
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(color, color.copy(alpha = 0f)),
+                    center = Offset(w * cx, w * cy),
+                    radius = w * r,
+                ),
+                radius = w * r,
+                center = Offset(w * cx, w * cy),
+            )
+        }
+        blob(FlowRoyal, 0.5f + 0.45f * cos(t + 3.5f), 0.5f + 0.40f * sin(2 * t + 1f), 0.70f)
+        blob(FlowVivid, 0.5f + 0.40f * cos(t + 1f), 0.5f + 0.35f * sin(t + 2f), 0.80f)
+        blob(FlowSky, 0.5f + 0.35f * sin(t), 0.5f + 0.30f * cos(2 * t), 0.65f)
+        blob(FlowLight.copy(alpha = 0.9f), 0.5f + 0.40f * sin(2 * t + 0.5f), 0.5f + 0.40f * cos(t), 0.45f)
+    }
+}
+
+private val FlowRoyal = Color(0xFF244FD1)
+private val FlowVivid = Color(0xFF0D86EE)
+private val FlowSky = Color(0xFF3CBCFD)
+private val FlowLight = Color(0xFF8BD5FC)

@@ -1,6 +1,5 @@
-package com.freezer.io
+package com.cease.io
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,20 +37,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private val FreezerShape = RoundedCornerShape(0.5.dp)
+private val CeaseShape = RoundedCornerShape(0.5.dp)
 
 @Composable
 fun AppIcon(pkg: String, size: Dp, modifier: Modifier = Modifier) {
@@ -77,7 +74,7 @@ fun rememberMessageSnackbar(vm: MainViewModel): SnackbarHostState {
 }
 
 @Composable
-fun FreezerSearchField(
+fun CeaseSearchField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
@@ -118,7 +115,7 @@ fun FreezerSearchField(
 }
 
 @Composable
-fun FreezerMenu(
+fun CeaseMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     content: @Composable ColumnScope.() -> Unit,
@@ -126,7 +123,7 @@ fun FreezerMenu(
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
-        shape = FreezerShape,
+        shape = CeaseShape,
         containerColor = FZ.c.menu,
         tonalElevation = 0.dp,
         shadowElevation = 8.dp,
@@ -135,7 +132,7 @@ fun FreezerMenu(
 }
 
 @Composable
-fun FreezerMenuItem(text: @Composable () -> Unit, onClick: () -> Unit) {
+fun CeaseMenuItem(text: @Composable () -> Unit, onClick: () -> Unit) {
     DropdownMenuItem(
         text = text,
         onClick = onClick,
@@ -147,13 +144,13 @@ fun FreezerMenuItem(text: @Composable () -> Unit, onClick: () -> Unit) {
 fun DialogButton(text: String, onClick: () -> Unit, color: Color = FZ.c.accent) {
     TextButton(
         onClick = onClick,
-        shape = FreezerShape,
+        shape = CeaseShape,
         colors = ButtonDefaults.textButtonColors(contentColor = color),
     ) { Text(text.uppercase()) }
 }
 
 @Composable
-fun FreezerDialog(
+fun CeaseDialog(
     onDismiss: () -> Unit,
     title: String? = null,
     settingsStyle: Boolean = false,
@@ -165,7 +162,7 @@ fun FreezerDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = FreezerShape,
+        shape = CeaseShape,
         containerColor = containerColor,
         tonalElevation = 0.dp,
         title = title?.let { { Text(it, color = inkColor) } },
@@ -176,7 +173,7 @@ fun FreezerDialog(
 }
 
 @Composable
-fun FreezerConfirmDialog(
+fun CeaseConfirmDialog(
     message: String,
     confirmLabel: String,
     dismissLabel: String,
@@ -184,7 +181,7 @@ fun FreezerConfirmDialog(
     onDismiss: () -> Unit,
     settingsStyle: Boolean = false,
 ) {
-    FreezerDialog(
+    CeaseDialog(
         onDismiss = onDismiss,
         settingsStyle = settingsStyle,
         confirmButton = { DialogButton(confirmLabel, onConfirm) },
@@ -196,7 +193,7 @@ fun FreezerConfirmDialog(
 
 @Composable
 fun UnfreezeAllDialog(vm: MainViewModel, settingsStyle: Boolean = false, onDismiss: () -> Unit) {
-    FreezerConfirmDialog(
+    CeaseConfirmDialog(
         message = "Are you sure you want to unfreeze all apps in your list?",
         confirmLabel = "Yes",
         dismissLabel = "No",
@@ -230,23 +227,15 @@ fun RadioRow(
 }
 
 @Composable
-fun SnowflakeIcon(
+fun CeaseStarIcon(
     modifier: Modifier = Modifier,
     color: Color = Color.White,
     iconSize: Dp = 24.dp,
 ) {
-    Canvas(modifier.size(iconSize)) {
-        val c = center
-        val r = size.minDimension / 2f
-        val stroke = size.minDimension * 0.085f
-        for (i in 0 until 6) {
-            rotate(degrees = i * 60f, pivot = c) {
-                drawLine(color = color, start = c, end = Offset(c.x, c.y - r), strokeWidth = stroke, cap = StrokeCap.Round)
-                val by = c.y - r * 0.58f
-                val bl = r * 0.32f
-                drawLine(color = color, start = Offset(c.x, by), end = Offset(c.x - bl, by - bl), strokeWidth = stroke, cap = StrokeCap.Round)
-                drawLine(color = color, start = Offset(c.x, by), end = Offset(c.x + bl, by - bl), strokeWidth = stroke, cap = StrokeCap.Round)
-            }
-        }
-    }
+    Icon(
+        painter = painterResource(R.drawable.ic_cease_star),
+        contentDescription = null,
+        tint = color,
+        modifier = modifier.size(iconSize),
+    )
 }

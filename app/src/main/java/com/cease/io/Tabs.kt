@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -99,12 +99,12 @@ fun TabBar(vm: MainViewModel) {
                     Spacer(Modifier.height(2.dp))
                 }
 
-                FreezerMenu(expanded = menuFor == tab.id, onDismissRequest = { menuFor = null }) {
+                CeaseMenu(expanded = menuFor == tab.id, onDismissRequest = { menuFor = null }) {
                     if (tab.mode == Mode.FREEZE) {
-                        FreezerMenuItem(text = { Text("Freeze") }, onClick = { menuFor = null; vm.freezeTab(tab.id) })
-                        FreezerMenuItem(text = { Text("Unfreeze") }, onClick = { menuFor = null; vm.unfreezeTab(tab.id) })
+                        CeaseMenuItem(text = { Text("Freeze") }, onClick = { menuFor = null; vm.freezeTab(tab.id) })
+                        CeaseMenuItem(text = { Text("Unfreeze") }, onClick = { menuFor = null; vm.unfreezeTab(tab.id) })
                     } else {
-                        FreezerMenuItem(text = { Text("Force stop") }, onClick = { menuFor = null; vm.freezeTab(tab.id) })
+                        CeaseMenuItem(text = { Text("Force stop") }, onClick = { menuFor = null; vm.freezeTab(tab.id) })
                     }
                     HorizontalDivider(color = colors.divider)
                     Row(
@@ -120,9 +120,9 @@ fun TabBar(vm: MainViewModel) {
                             modifier = Modifier.clickable { vm.moveTab(tab.id, 1) }.padding(horizontal = 16.dp, vertical = 6.dp))
                     }
                     if (tab.id != DEFAULT_TAB) {
-                        FreezerMenuItem(text = { Text("Delete") }, onClick = { menuFor = null; deleting = tab })
+                        CeaseMenuItem(text = { Text("Delete") }, onClick = { menuFor = null; deleting = tab })
                     }
-                    FreezerMenuItem(text = { Text("Add new tab") }, onClick = { menuFor = null; dialog = TabDialog(null) })
+                    CeaseMenuItem(text = { Text("Add new tab") }, onClick = { menuFor = null; dialog = TabDialog(null) })
                 }
             }
         }
@@ -131,7 +131,7 @@ fun TabBar(vm: MainViewModel) {
     dialog?.let { d -> TabDialogView(vm, d.editId) { dialog = null } }
 
     deleting?.let { tab ->
-        FreezerConfirmDialog(
+        CeaseConfirmDialog(
             message = "Delete tab \"${tab.name}\"? Its apps move to the default tab.",
             confirmLabel = "Delete",
             dismissLabel = "Cancel",
@@ -148,7 +148,7 @@ private fun TabDialogView(vm: MainViewModel, editId: String?, onDismiss: () -> U
     var name by remember { mutableStateOf(existing?.name ?: "") }
     var mode by remember { mutableStateOf(vm.defaultMode) }
 
-    FreezerDialog(
+    CeaseDialog(
         onDismiss = onDismiss,
         title = if (existing == null) "New tab" else "Rename tab",
         confirmButton = {

@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import android.content.Intent
 import android.net.Uri
@@ -85,7 +85,7 @@ fun AppActionSheet(vm: MainViewModel, app: AppItem, onDismiss: () -> Unit) {
                     vm.forceStop(current)
                 }
             } else {
-                SheetRow(if (current.isFrozen) "Unfreeze" else "Freeze", custom = { SnowflakeIcon(color = colors.sheetIconGlyph) }) {
+                SheetRow(if (current.isFrozen) "Unfreeze" else "Freeze", custom = { CeaseStarIcon(color = colors.sheetIconGlyph) }) {
                     onDismiss()
                     vm.toggleFreeze(current)
                 }
@@ -122,7 +122,7 @@ fun AppActionSheet(vm: MainViewModel, app: AppItem, onDismiss: () -> Unit) {
     }
 
     if (moving) {
-        FreezerDialog(
+        CeaseDialog(
             onDismiss = { moving = false },
             title = "Move to tab",
             dismissButton = { DialogButton("Cancel", { moving = false }) },

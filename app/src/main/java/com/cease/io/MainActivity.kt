@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import android.content.Intent
 import android.graphics.Color
@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            FreezerTheme(vm) {
+            CeaseTheme(vm) {
                 val colors = FZ.c
                 LaunchedEffect(panelFull, colors) { applyBars(panelFull, colors) }
                 if (!(vm.showSetup && !vm.setupDone)) {
@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
         handleLaunchIntent(intent)
     }
 
-    private fun applyBars(full: Boolean, c: FreezerColors) {
+    private fun applyBars(full: Boolean, c: CeaseColors) {
         val controller = WindowCompat.getInsetsController(window, window.decorView)
         window.statusBarColor = if (full) c.panel.toArgb() else Color.TRANSPARENT
         controller.isAppearanceLightStatusBars = full && !c.isDark

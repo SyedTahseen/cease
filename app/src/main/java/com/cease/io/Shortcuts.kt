@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import android.content.Context
 import android.content.Intent
@@ -7,7 +7,7 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
 
-const val ACTION_LAUNCH = "com.freezer.io.LAUNCH"
+const val ACTION_LAUNCH = "com.cease.io.LAUNCH"
 const val EXTRA_PKG = "pkg"
 
 fun pinLaunchShortcut(ctx: Context, item: AppItem): Boolean {

@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 object RootShell {
     data class Result(val success: Boolean, val output: String)

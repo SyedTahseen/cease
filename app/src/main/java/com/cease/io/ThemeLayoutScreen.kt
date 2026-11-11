@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
@@ -112,7 +112,7 @@ private fun <T> ChoiceDialog(
     onDismiss: () -> Unit,
     trailing: @Composable (T) -> Unit = {},
 ) {
-    FreezerDialog(
+    CeaseDialog(
         onDismiss = onDismiss,
         title = title,
         settingsStyle = true,

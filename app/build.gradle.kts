@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.freezer.io"
+    namespace = "com.cease.io"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.freezer.io"
+        applicationId = "com.cease.io"
         minSdk = 26
         targetSdk = 34
         versionCode = 3
@@ -34,8 +34,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // Use the real release key when available (GitHub Actions secrets),
-            // otherwise fall back to the debug key so local builds still work.
+
             val releaseCfg = signingConfigs.getByName("release")
             signingConfig = if (releaseCfg.storeFile != null) releaseCfg
                             else signingConfigs.getByName("debug")

@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import android.Manifest
 import android.content.pm.PackageManager

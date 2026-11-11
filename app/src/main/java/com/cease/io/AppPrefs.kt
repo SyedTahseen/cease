@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import android.content.Context
 import androidx.core.content.edit
@@ -8,11 +8,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-private const val PREFS_NAME = "freezer"
-private const val BACKUP_APP = "Freezer"
+private const val PREFS_NAME = "cease"
+private const val BACKUP_APP = "Cease"
 private const val BACKUP_VERSION = 1
 fun backupFileName(): String =
-    "freezer_" + SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date()) + ".json"
+    "cease_" + SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date()) + ".json"
 
 private object Key {
     const val AUTO_MODE = "auto_mode"
@@ -205,7 +205,7 @@ class AppPrefs(context: Context) {
 
     fun importJson(text: String): Boolean {
         val root = runCatching { JSONObject(text) }.getOrNull() ?: return false
-        if (root.optString("app") != BACKUP_APP) return false
+        if (root.optString("app") != BACKUP_APP && root.optString("app") != "Freezer") return false
         val s = root.optJSONObject("settings") ?: return false
         val tabsArr = root.optJSONArray("tabs") ?: return false
 

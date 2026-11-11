@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write   # needed to create a GitHub Release on tags
+  contents: write
 
 jobs:
   build:
@@ -47,22 +47,20 @@ jobs:
       - name: Rename APK
         run: |
           mkdir -p dist
-          cp app/build/outputs/apk/release/*.apk dist/Freezer.apk
+          cp app/build/outputs/apk/release/*.apk dist/Cease.apk
 
       - name: Verify APK signing key
         run: |
           APKSIGNER=$(ls $ANDROID_HOME/build-tools/*/apksigner | sort -V | tail -1)
-          $APKSIGNER verify --print-certs dist/Freezer.apk | tee certs.txt
+          $APKSIGNER verify --print-certs dist/Cease.apk | tee certs.txt
           if grep -qi "Android Debug" certs.txt; then
             echo "::warning::APK is signed with the DEBUG key - secrets not picked up"
           fi
 
-      # archive: false => uploads the .apk as-is (no zip). The artifact
-      # name becomes the file name, so the download is Freezer.apk.
       - name: Upload APK (not zipped)
         uses: actions/upload-artifact@v7
         with:
-          path: dist/Freezer.apk
+          path: dist/Cease.apk
           archive: false
           if-no-files-found: error
 
@@ -70,5 +68,5 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/Freezer.apk
+          files: dist/Cease.apk
           generate_release_notes: true

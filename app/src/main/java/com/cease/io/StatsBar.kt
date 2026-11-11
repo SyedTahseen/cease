@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import android.app.ActivityManager
 import android.content.Context

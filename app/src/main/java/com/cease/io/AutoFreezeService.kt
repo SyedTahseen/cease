@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -81,7 +81,7 @@ class AutoFreezeService : Service() {
     private fun schedule(delayMs: Long) {
         cancel()
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "freezer:auto").apply {
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "cease:auto").apply {
             acquire(delayMs + 60_000L)
         }
         handler.postDelayed(freezeTask, delayMs)

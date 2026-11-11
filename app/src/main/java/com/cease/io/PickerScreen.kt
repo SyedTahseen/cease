@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -52,7 +52,7 @@ fun PickerScreen(vm: MainViewModel) {
     Scaffold(containerColor = colors.row, snackbarHost = { SnackbarHost(snackbar) }) { pad ->
         Column(Modifier.padding(pad).fillMaxSize()) {
             Column(Modifier.fillMaxWidth().background(colors.bar)) {
-                FreezerSearchField(
+                CeaseSearchField(
                     value = vm.query,
                     onValueChange = { vm.query = it },
                     placeholder = "Search…",
@@ -71,7 +71,7 @@ fun PickerScreen(vm: MainViewModel) {
 
                     Box(Modifier.padding(bottom = 4.dp)) {
                         IconButton(onClick = { sortMenu = true }) { SortGlyph() }
-                        FreezerMenu(expanded = sortMenu, onDismissRequest = { sortMenu = false }) {
+                        CeaseMenu(expanded = sortMenu, onDismissRequest = { sortMenu = false }) {
                             MenuHeader("Sort by")
                             RadioItem("Name", !vm.sortByUpdate) { vm.sortByUpdate = false }
                             RadioItem("Update time", vm.sortByUpdate) { vm.sortByUpdate = true }
@@ -86,7 +86,7 @@ fun PickerScreen(vm: MainViewModel) {
                                 if (vm.onlyNotFrozen) vm.onlyFrozen = false
                             }
                             MenuHeader("Others")
-                            FreezerMenuItem(
+                            CeaseMenuItem(
                                 text = { Text("Settings") },
                                 onClick = { sortMenu = false; vm.openSettings() },
                             )
@@ -138,7 +138,7 @@ fun PickerScreen(vm: MainViewModel) {
                             Checkbox(
                                 checked = checked,
                                 onCheckedChange = { vm.togglePick(app) },
-                                colors = freezerCheckboxColors(),
+                                colors = ceaseCheckboxColors(),
                                 modifier = Modifier.padding(start = 8.dp),
                             )
                         }
@@ -175,7 +175,7 @@ private fun SystemWarningPanel(vm: MainViewModel) {
             Modifier.padding(top = 8.dp).clickable { dontShow = !dontShow },
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Checkbox(checked = dontShow, onCheckedChange = { dontShow = it }, colors = freezerCheckboxColors())
+            Checkbox(checked = dontShow, onCheckedChange = { dontShow = it }, colors = ceaseCheckboxColors())
             Text("Don't show again", color = colors.rowTitle, fontSize = FZType.body)
         }
         DialogButton("Got it", { vm.dismissSystemWarning(dontShow) })
@@ -189,7 +189,7 @@ private fun MenuHeader(title: String) {
 
 @Composable
 private fun RadioItem(text: String, selected: Boolean, onClick: () -> Unit) {
-    FreezerMenuItem(
+    CeaseMenuItem(
         text = { Row(Modifier.width(200.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(text, Modifier.weight(1f)); RadioButton(selected = selected, onClick = null)
         } },
@@ -199,7 +199,7 @@ private fun RadioItem(text: String, selected: Boolean, onClick: () -> Unit) {
 
 @Composable
 private fun CheckItem(text: String, checked: Boolean, onClick: () -> Unit) {
-    FreezerMenuItem(
+    CeaseMenuItem(
         text = { Row(Modifier.width(200.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(text, Modifier.weight(1f)); Checkbox(checked = checked, onCheckedChange = null)
         } },

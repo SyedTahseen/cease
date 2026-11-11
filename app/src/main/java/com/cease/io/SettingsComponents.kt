@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -124,9 +124,9 @@ internal fun DropdownSettingRow(
     Column(Modifier.fillMaxWidth().clickable(enabled = enabled) { open = true }) {
         Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp)) {
             Column { SettingText(title, value, enabled) }
-            FreezerMenu(expanded = open, onDismissRequest = { open = false }) {
+            CeaseMenu(expanded = open, onDismissRequest = { open = false }) {
                 options.forEach { (label, action) ->
-                    FreezerMenuItem(text = { Text(label) }, onClick = { open = false; action() })
+                    CeaseMenuItem(text = { Text(label) }, onClick = { open = false; action() })
                 }
             }
         }

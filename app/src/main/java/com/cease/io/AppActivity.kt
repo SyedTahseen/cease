@@ -1,4 +1,4 @@
-package com.freezer.io
+package com.cease.io
 
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -16,7 +16,7 @@ class AppActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         vm.pageActivityOpen = true
         setContent {
-            FreezerTheme(vm) {
+            CeaseTheme(vm) {
                 val anyPage = vm.anyPageOpen
                 val colors = FZ.c
                 LaunchedEffect(vm.showSetup, vm.showAutoFreeze, vm.showThemeLayout, vm.showSettings, colors) {
@@ -37,7 +37,7 @@ class AppActivity : ComponentActivity() {
         }
     }
 
-    private fun applyBars(setup: Boolean, settings: Boolean, c: FreezerColors) {
+    private fun applyBars(setup: Boolean, settings: Boolean, c: CeaseColors) {
         val controller = WindowCompat.getInsetsController(window, window.decorView)
         window.statusBarColor = when {
             setup -> SetupBlue.toArgb()

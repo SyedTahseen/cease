@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Freezer"
+rootProject.name = "Cease"
 include(":app")
