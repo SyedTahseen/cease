@@ -6,8 +6,6 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 
-/** Version-safe wrappers: the flag-less overloads are deprecated since API 33. */
-
 internal fun PackageManager.appInfo(pkg: String): ApplicationInfo =
     if (Build.VERSION.SDK_INT >= 33) {
         getApplicationInfo(pkg, PackageManager.ApplicationInfoFlags.of(0))

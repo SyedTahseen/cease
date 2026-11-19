@@ -3,7 +3,6 @@ package com.cease.io
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
@@ -45,10 +44,9 @@ import androidx.compose.ui.unit.dp
 
 private class TabDialog(val editId: String?)
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TabBar(vm: MainViewModel) {
-    val colors = FZ.c
+    val colors = CeaseTheme.colors
     var menuFor by remember { mutableStateOf<String?>(null) }
     var dialog by remember { mutableStateOf<TabDialog?>(null) }
     var deleting by remember { mutableStateOf<TabItem?>(null) }
@@ -84,7 +82,7 @@ fun TabBar(vm: MainViewModel) {
                         Text(
                             tab.name.uppercase(),
                             color = textColor,
-                            fontSize = FZType.body,
+                            style = Type.Body,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -112,11 +110,11 @@ fun TabBar(vm: MainViewModel) {
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text("‹", color = colors.menuInk, fontSize = FZType.display,
+                        Text("‹", color = colors.menuInk, style = Type.Headline,
                             modifier = Modifier.clickable { vm.moveTab(tab.id, -1) }.padding(horizontal = 16.dp, vertical = 6.dp))
                         Icon(Icons.Default.Edit, contentDescription = "Rename", tint = colors.menuInk,
                             modifier = Modifier.clickable { menuFor = null; dialog = TabDialog(tab.id) }.padding(12.dp))
-                        Text("›", color = colors.menuInk, fontSize = FZType.display,
+                        Text("›", color = colors.menuInk, style = Type.Headline,
                             modifier = Modifier.clickable { vm.moveTab(tab.id, 1) }.padding(horizontal = 16.dp, vertical = 6.dp))
                     }
                     if (tab.id != DEFAULT_TAB) {
@@ -143,7 +141,7 @@ fun TabBar(vm: MainViewModel) {
 
 @Composable
 private fun TabDialogView(vm: MainViewModel, editId: String?, onDismiss: () -> Unit) {
-    val colors = FZ.c
+    val colors = CeaseTheme.colors
     val existing = vm.tabs.firstOrNull { it.id == editId }
     var name by remember { mutableStateOf(existing?.name ?: "") }
     var mode by remember { mutableStateOf(vm.defaultMode) }
@@ -184,7 +182,7 @@ private fun TabDialogView(vm: MainViewModel, editId: String?, onDismiss: () -> U
             )
             Spacer(Modifier.height(12.dp))
             if (existing == null) {
-                Text("This tab will", color = colors.menuMuted, fontSize = FZType.secondary)
+                Text("This tab will", color = colors.menuMuted, style = Type.Small)
                 Mode.entries.forEach { m ->
                     RadioRow(
                         label = if (m == Mode.FREEZE) "Freeze apps" else "Force stop apps",
@@ -195,7 +193,7 @@ private fun TabDialogView(vm: MainViewModel, editId: String?, onDismiss: () -> U
                     )
                 }
             } else {
-                Text("Mode: ${existing.mode.label}", color = colors.menuMuted, fontSize = FZType.secondary)
+                Text("Mode: ${existing.mode.label}", color = colors.menuMuted, style = Type.Small)
             }
         }
     }

@@ -15,35 +15,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.sp
-
-enum class ThemeMode(val label: String) {
-    SYSTEM("System default"),
-    LIGHT("Light"),
-    DARK("Dark"),
-    SPARK("Spark"),
-}
 
 val StatusGreen = Color(0xFF4CAF50)
 val StatusAmber = Color(0xFFFFC107)
 val StatusRed = Color(0xFFF44336)
 
-object FZType {
-    val display = 28.sp
-    val headline = 20.sp
-    val title = 18.sp
-    val body = 16.sp
-    val secondary = 14.sp
-}
-
 private val CeaseTypography = Typography(
-    headlineSmall = TextStyle(fontSize = FZType.headline),
-    bodyLarge = TextStyle(fontSize = FZType.body),
-    bodyMedium = TextStyle(fontSize = FZType.secondary),
-    labelLarge = TextStyle(fontSize = FZType.secondary, fontWeight = FontWeight.Medium),
+    headlineSmall = Type.Heading,
+    titleLarge = Type.Heading,
+    titleMedium = Type.BodyMedium,
+    titleSmall = Type.SmallMedium,
+    bodyLarge = Type.Body,
+    bodyMedium = Type.Small,
+    bodySmall = Type.Caption,
+    labelLarge = Type.ButtonSmall,
+    labelMedium = Type.Label,
+    labelSmall = Type.Overline,
 )
 
 @Immutable
@@ -257,16 +245,16 @@ private val SparkCeaseColors = CeaseColors(
 
 private val LocalCeaseColors = staticCompositionLocalOf { DarkCeaseColors }
 
-object FZ {
-    val c: CeaseColors
+object CeaseTheme {
+    val colors: CeaseColors
         @Composable @ReadOnlyComposable get() = LocalCeaseColors.current
 }
 
 @Composable
 fun ceaseCheckboxColors(): CheckboxColors = CheckboxDefaults.colors(
-    checkedColor = FZ.c.checkFill,
-    uncheckedColor = FZ.c.checkBorder,
-    checkmarkColor = FZ.c.checkMark,
+    checkedColor = CeaseTheme.colors.checkFill,
+    uncheckedColor = CeaseTheme.colors.checkBorder,
+    checkmarkColor = CeaseTheme.colors.checkMark,
 )
 
 @Composable

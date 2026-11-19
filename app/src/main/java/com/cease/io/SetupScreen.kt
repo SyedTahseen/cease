@@ -28,10 +28,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -60,7 +60,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -160,12 +159,12 @@ private fun BoxScope.WelcomePage(vm: MainViewModel) {
         Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Welcome to Cease", color = Color.White, fontSize = FZType.display, textAlign = TextAlign.Center)
+        Text("Welcome to Cease", color = Color.White, style = Type.Headline, textAlign = TextAlign.Center)
         Spacer(Modifier.height(16.dp))
         Text(
             "A box to freeze and store the apps you rarely use.",
             color = Color.White.copy(alpha = 0.85f),
-            fontSize = FZType.body,
+            style = Type.Body,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(32.dp))
@@ -177,7 +176,7 @@ private fun BoxScope.WelcomePage(vm: MainViewModel) {
         ) {
             Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
             Spacer(Modifier.width(12.dp))
-            Text("Get started", fontSize = FZType.body, fontWeight = FontWeight.Medium)
+            Text("Get started", style = Type.ButtonSmall)
         }
     }
 }
@@ -248,18 +247,18 @@ private fun ChecklistPage(vm: MainViewModel) {
 
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 20.dp)) {
-            Text("Set up Cease", color = Color.White, fontSize = FZType.display, fontWeight = FontWeight.Bold)
+            Text("Set up Cease", color = Color.White, style = Type.Headline)
             Spacer(Modifier.height(16.dp))
             Text(
                 "To freeze apps, Cease needs root access.",
                 color = Color.White,
-                fontSize = FZType.body,
+                style = Type.Body,
             )
             Spacer(Modifier.height(12.dp))
             Text(
                 "Cease only freezes the apps you choose, and only when you ask it to or when Auto Freeze is on.",
                 color = Color.White.copy(alpha = 0.85f),
-                fontSize = FZType.secondary,
+                style = Type.Small,
             )
             Spacer(Modifier.height(20.dp))
             ModeChoice(vm)
@@ -278,7 +277,7 @@ private fun ChecklistPage(vm: MainViewModel) {
                 disabledContentColor = Color.White.copy(alpha = 0.45f),
             ),
         ) {
-            Text(if (vm.setupDone) "Done" else "Finish setup", fontSize = FZType.body, fontWeight = FontWeight.Medium)
+            Text(if (vm.setupDone) "Done" else "Finish setup", style = Type.ButtonSmall)
         }
     }
 
@@ -300,7 +299,7 @@ private fun ChecklistPage(vm: MainViewModel) {
 
 @Composable
 private fun ModeChoice(vm: MainViewModel) {
-    Text("What should Cease do with your apps?", color = Color.White, fontSize = FZType.title, fontWeight = FontWeight.Medium)
+    Text("What should Cease do with your apps?", color = Color.White, style = Type.Heading)
     Spacer(Modifier.height(4.dp))
     Mode.entries.forEach { m ->
         Row(
@@ -313,12 +312,12 @@ private fun ModeChoice(vm: MainViewModel) {
                 colors = RadioButtonDefaults.colors(selectedColor = SetupYellow, unselectedColor = Color.White),
             )
             Column(Modifier.padding(start = 8.dp, top = 2.dp)) {
-                Text(m.label, color = Color.White, fontSize = FZType.body, fontWeight = FontWeight.Medium)
+                Text(m.label, color = Color.White, style = Type.BodyMedium)
                 Text(
                     if (m == Mode.FREEZE) "Disables the app until you open it from Cease."
                     else "Stops the app and its background work. It stays enabled.",
                     color = Color.White.copy(alpha = 0.85f),
-                    fontSize = FZType.secondary,
+                    style = Type.Small,
                 )
             }
         }
@@ -335,12 +334,12 @@ private fun SetupItemRow(item: SetupItem) {
         StatusIcon(item.state)
         Spacer(Modifier.width(20.dp))
         Column(Modifier.weight(1f)) {
-            Text(item.title, color = Color.White, fontSize = FZType.title, fontWeight = FontWeight.Medium)
+            Text(item.title, color = Color.White, style = Type.Heading)
             if (item.state != SetupState.OK) {
                 Text(
                     item.hint,
                     color = Color.White.copy(alpha = 0.85f),
-                    fontSize = FZType.secondary,
+                    style = Type.Small,
                     modifier = Modifier.padding(top = 4.dp),
                 )
             }
@@ -361,7 +360,7 @@ private fun StatusIcon(state: SetupState) {
     ) {
         when (state) {
             SetupState.OK -> Icon(Icons.Filled.Check, contentDescription = "Done", tint = color, modifier = Modifier.size(18.dp))
-            SetupState.WARN -> Text("!", color = color, fontSize = FZType.body, fontWeight = FontWeight.Bold)
+            SetupState.WARN -> Text("!", color = color, style = Type.BodyBold)
             SetupState.ERROR -> Icon(Icons.Filled.Close, contentDescription = "Missing", tint = color, modifier = Modifier.size(18.dp))
         }
     }

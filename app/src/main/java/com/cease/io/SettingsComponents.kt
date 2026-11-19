@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -32,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -44,7 +43,7 @@ internal fun SettingsPage(
 ) {
     BackHandler(onBack = onBack)
     Scaffold(
-        containerColor = FZ.c.settingsBg,
+        containerColor = CeaseTheme.colors.settingsBg,
         snackbarHost = { snackbar?.let { SnackbarHost(it) } },
     ) { pad ->
         Column(Modifier.padding(pad).fillMaxSize()) {
@@ -56,12 +55,12 @@ internal fun SettingsPage(
 
 @Composable
 private fun SettingText(title: String, subtitle: String?, enabled: Boolean = true) {
-    Text(title, color = if (enabled) FZ.c.settingsInk else FZ.c.settingsDisabledInk, fontSize = FZType.body)
+    Text(title, color = if (enabled) CeaseTheme.colors.settingsInk else CeaseTheme.colors.settingsDisabledInk, style = Type.Body)
     if (subtitle != null) {
         Text(
             subtitle,
-            color = if (enabled) FZ.c.settingsSecondary else FZ.c.settingsDisabledSub,
-            fontSize = FZType.secondary,
+            color = if (enabled) CeaseTheme.colors.settingsSecondary else CeaseTheme.colors.settingsDisabledSub,
+            style = Type.Small,
             modifier = Modifier.padding(top = 2.dp),
         )
     }
@@ -70,17 +69,16 @@ private fun SettingText(title: String, subtitle: String?, enabled: Boolean = tru
 @Composable
 private fun SettingsHeader(title: String, onBack: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().height(64.dp).background(FZ.c.settingsBar).padding(horizontal = 4.dp),
+        Modifier.fillMaxWidth().heightIn(min = 64.dp).background(CeaseTheme.colors.settingsBar).padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onBack) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = FZ.c.settingsBarInk)
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = CeaseTheme.colors.settingsBarInk)
         }
         Text(
             title,
-            color = FZ.c.settingsBarInk,
-            fontSize = FZType.headline,
-            fontWeight = FontWeight.Medium,
+            color = CeaseTheme.colors.settingsBarInk,
+            style = Type.PageTitle,
             modifier = Modifier.padding(start = 12.dp),
         )
     }
@@ -90,10 +88,9 @@ private fun SettingsHeader(title: String, onBack: () -> Unit) {
 internal fun SectionLabel(text: String) {
     Text(
         text,
-        color = FZ.c.accent,
-        fontSize = FZType.secondary,
-        fontWeight = FontWeight.Medium,
-        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 28.dp, bottom = 4.dp),
+        color = CeaseTheme.colors.accent,
+        style = Type.Small,
+        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
     )
 }
 
@@ -108,7 +105,7 @@ internal fun SettingRow(
         Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp)) {
             SettingText(title, subtitle)
         }
-        if (divider) HorizontalDivider(color = FZ.c.settingsDivider)
+        if (divider) HorizontalDivider(color = CeaseTheme.colors.settingsDivider)
     }
 }
 
@@ -130,7 +127,7 @@ internal fun DropdownSettingRow(
                 }
             }
         }
-        if (divider) HorizontalDivider(color = FZ.c.settingsDivider)
+        if (divider) HorizontalDivider(color = CeaseTheme.colors.settingsDivider)
     }
 }
 
@@ -155,13 +152,13 @@ internal fun SwitchSettingRow(
                 onCheckedChange = onChange,
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color.White,
-                    checkedTrackColor = FZ.c.accent,
-                    uncheckedThumbColor = FZ.c.switchThumbOff,
-                    uncheckedTrackColor = FZ.c.switchTrackOff,
-                    uncheckedBorderColor = FZ.c.switchTrackOff,
+                    checkedTrackColor = CeaseTheme.colors.accent,
+                    uncheckedThumbColor = CeaseTheme.colors.switchThumbOff,
+                    uncheckedTrackColor = CeaseTheme.colors.switchTrackOff,
+                    uncheckedBorderColor = CeaseTheme.colors.switchTrackOff,
                 ),
             )
         }
-        if (divider) HorizontalDivider(color = FZ.c.settingsDivider)
+        if (divider) HorizontalDivider(color = CeaseTheme.colors.settingsDivider)
     }
 }

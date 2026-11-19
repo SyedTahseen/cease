@@ -48,7 +48,7 @@ fun AppActionSheet(vm: MainViewModel, app: AppItem, onDismiss: () -> Unit) {
     val current = vm.items.find { it.packageName == app.packageName } ?: app
     val pkg = current.packageName
     var moving by remember { mutableStateOf(false) }
-    val colors = FZ.c
+    val colors = CeaseTheme.colors
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -69,7 +69,7 @@ fun AppActionSheet(vm: MainViewModel, app: AppItem, onDismiss: () -> Unit) {
                 Text(
                     current.label,
                     color = colors.sheetTitle,
-                    fontSize = FZType.headline,
+                    style = Type.Heading,
                     modifier = Modifier.padding(start = 20.dp),
                 )
             }
@@ -132,7 +132,7 @@ fun AppActionSheet(vm: MainViewModel, app: AppItem, onDismiss: () -> Unit) {
                     Text(
                         tab.name + if (tab.id == current.tabId) "  ✓" else "",
                         color = colors.menuInk,
-                        fontSize = FZType.body,
+                        style = Type.Body,
                         modifier = Modifier.fillMaxWidth().clickable {
                             moving = false
                             vm.moveApp(pkg, tab.id)
@@ -147,7 +147,7 @@ fun AppActionSheet(vm: MainViewModel, app: AppItem, onDismiss: () -> Unit) {
 
 @Composable
 private fun SheetDivider() {
-    HorizontalDivider(color = FZ.c.divider, modifier = Modifier.padding(vertical = 4.dp))
+    HorizontalDivider(color = CeaseTheme.colors.divider, modifier = Modifier.padding(vertical = 4.dp))
 }
 
 @Composable
@@ -162,12 +162,12 @@ private fun SheetRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            Modifier.size(40.dp).clip(CircleShape).background(FZ.c.sheetIconCircle),
+            Modifier.size(40.dp).clip(CircleShape).background(CeaseTheme.colors.sheetIconCircle),
             contentAlignment = Alignment.Center,
         ) {
-            if (icon != null) Icon(icon, contentDescription = null, tint = FZ.c.sheetIconGlyph)
+            if (icon != null) Icon(icon, contentDescription = null, tint = CeaseTheme.colors.sheetIconGlyph)
             custom?.invoke()
         }
-        Text(label, color = FZ.c.sheetInk, fontSize = FZType.body, modifier = Modifier.padding(start = 24.dp))
+        Text(label, color = CeaseTheme.colors.sheetInk, style = Type.Body, modifier = Modifier.padding(start = 24.dp))
     }
 }

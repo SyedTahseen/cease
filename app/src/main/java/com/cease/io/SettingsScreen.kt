@@ -34,7 +34,7 @@ fun SettingsScreen(vm: MainViewModel) {
         SectionLabel("Appearance")
         SettingRow(
             title = "Theme & layout",
-            subtitle = "Theme, slider, icon size, app DPI and tabs",
+            subtitle = "Theme, slider, icon size, display size and tabs",
             divider = false,
             onClick = { vm.openThemeLayout() },
         )

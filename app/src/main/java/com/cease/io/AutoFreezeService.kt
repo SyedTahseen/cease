@@ -23,10 +23,11 @@ class AutoFreezeService : Service() {
     private val handler = Handler(Looper.getMainLooper())
     private var wakeLock: PowerManager.WakeLock? = null
     private var lastHomeAt = 0L
+    private var inForeground = false
     private val freezeTask = Runnable { runFreeze() }
 
     private val receiver = object : BroadcastReceiver() {
-        @Suppress("DEPRECATION") // ACTION_CLOSE_SYSTEM_DIALOGS "homekey" is the only Home signal available here
+        @Suppress("DEPRECATION")
         override fun onReceive(context: Context, intent: Intent) {
             val prefs = AppPrefs(context)
             when (intent.action) {
@@ -46,7 +47,13 @@ class AutoFreezeService : Service() {
         super.onCreate()
         createChannel()
         val type = if (Build.VERSION.SDK_INT >= 34) ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE else 0
-        ServiceCompat.startForeground(this, NOTIF_ID, buildNotification(), type)
+        try {
+            ServiceCompat.startForeground(this, NOTIF_ID, buildNotification(), type)
+        } catch (_: RuntimeException) {
+            stopSelf()
+            return
+        }
+        inForeground = true
         val filter = IntentFilter().apply {
             addAction(Intent.ACTION_SCREEN_OFF)
             addAction(Intent.ACTION_SCREEN_ON)
@@ -57,10 +64,11 @@ class AutoFreezeService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (AppPrefs(this).autoMode == AutoMode.NEVER) {
+        if (!inForeground || AppPrefs(this).autoMode == AutoMode.NEVER) {
             stopSelf()
             return START_NOT_STICKY
         }
+        getSystemService(NotificationManager::class.java).notify(NOTIF_ID, buildNotification())
         return START_STICKY
     }
 
@@ -101,9 +109,11 @@ class AutoFreezeService : Service() {
 
     private fun runFreeze() {
         val ctx = applicationContext
+        val lock = wakeLock
         Thread {
             runCatching { AutoFreezer.run(ctx) }
-            handler.post { releaseLock() }
+
+            handler.post { if (wakeLock === lock) releaseLock() }
         }.start()
     }
 

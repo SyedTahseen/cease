@@ -12,7 +12,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.core.view.WindowCompat
 
 class AppActivity : ComponentActivity() {
     private val vm: MainViewModel by lazy { sharedViewModel() }
@@ -24,15 +23,13 @@ class AppActivity : ComponentActivity() {
         setContent {
             CeaseTheme(vm) {
                 val anyPage = vm.anyPageOpen
-                val colors = FZ.c
-                LaunchedEffect(vm.showSetup, vm.showAutoFreeze, vm.showThemeLayout, vm.showSettings, colors) {
-                    applyBars(vm.showSetup, !vm.showSetup && (vm.showAutoFreeze || vm.showThemeLayout || vm.showSettings), colors)
-                }
+                val colors = CeaseTheme.colors
+                val settingsPage = !vm.showSetup && (vm.showAutoFreeze || vm.showThemeLayout || vm.showSettings)
+                LaunchedEffect(vm.showSetup, settingsPage, colors) { applyBars(vm.showSetup, settingsPage, colors) }
                 LaunchedEffect(anyPage) { if (!anyPage) finish() }
 
                 BackHandler(enabled = vm.showSetup && !vm.setupDone && vm.setupPage == 0) { finishAffinity() }
 
-                val settingsPage = !vm.showSetup && (vm.showAutoFreeze || vm.showThemeLayout || vm.showSettings)
                 val bars = barColors(vm.showSetup, settingsPage, colors)
 
                 Box(Modifier.fillMaxSize().imePadding()) {
@@ -58,9 +55,8 @@ class AppActivity : ComponentActivity() {
     }
 
     private fun applyBars(setup: Boolean, settings: Boolean, c: CeaseColors) {
-        val controller = WindowCompat.getInsetsController(window, window.decorView)
-        controller.isAppearanceLightStatusBars = !setup && !c.isDark
-        controller.isAppearanceLightNavigationBars = !setup && !c.isDark
+        val lightBars = !setup && !c.isDark
+        setBarIconAppearance(lightStatusBars = lightBars, lightNavigationBars = lightBars)
         window.setBackgroundDrawable(ColorDrawable(barColors(setup, settings, c).bottom.toArgb()))
     }
 

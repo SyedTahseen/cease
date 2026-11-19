@@ -11,6 +11,9 @@ import java.util.Locale
 private const val PREFS_NAME = "cease"
 private const val BACKUP_APP = "Cease"
 private const val BACKUP_VERSION = 1
+internal const val MIN_DPI_SCALE = 0.8f
+internal const val MAX_DPI_SCALE = 1.3f
+
 fun backupFileName(): String =
     "cease_" + SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date()) + ".json"
 
@@ -71,7 +74,7 @@ class AppPrefs(context: Context) {
         set(v) { putEnum(Key.ICON_SIZE, v) }
 
     var dpiScale: Float
-        get() = p.getFloat(Key.DPI_SCALE, 1f)
+        get() = p.getFloat(Key.DPI_SCALE, 1f).coerceIn(MIN_DPI_SCALE, MAX_DPI_SCALE)
         set(v) { p.edit { putFloat(Key.DPI_SCALE, v) } }
 
     var setupDone: Boolean
@@ -205,7 +208,7 @@ class AppPrefs(context: Context) {
 
     fun importJson(text: String): Boolean {
         val root = runCatching { JSONObject(text) }.getOrNull() ?: return false
-        if (root.optString("app") != BACKUP_APP && root.optString("app") != "Freezer") return false
+        if (root.optString("app") != BACKUP_APP) return false
         val s = root.optJSONObject("settings") ?: return false
         val tabsArr = root.optJSONArray("tabs") ?: return false
 
@@ -225,22 +228,27 @@ class AppPrefs(context: Context) {
             val apps = o.optJSONArray("apps")
             if (apps != null) for (j in 0 until apps.length()) {
                 val pkg = apps.optString(j)
-                if (pkg.isEmpty()) continue
+                if (!isSafePackageName(pkg)) continue
                 list += pkg
                 appTabs[pkg] = id
             }
         }
         if (DEFAULT_TAB !in order) order.add(0, DEFAULT_TAB)
 
+        val importedDpi = s.optDouble("dpi_scale", dpiScale.toDouble()).toFloat()
+            .takeIf { it.isFinite() }
+            ?.coerceIn(MIN_DPI_SCALE, MAX_DPI_SCALE)
+            ?: dpiScale
+
         p.edit {
             putString(Key.THEME_MODE, enumOr(s.optString("theme"), themeMode).name)
             putString(Key.SLIDER_STYLE, enumOr(s.optString("slider_style"), sliderStyle).name)
             putString(Key.ICON_SIZE, enumOr(s.optString("icon_size"), iconSize).name)
-            putFloat(Key.DPI_SCALE, s.optDouble("dpi_scale", dpiScale.toDouble()).toFloat())
+            putFloat(Key.DPI_SCALE, importedDpi)
             putBoolean(Key.TABS_ON, s.optBoolean("tabs_enabled", tabsEnabled))
             putString(Key.DEFAULT_MODE, enumOr(s.optString("default_mode"), defaultMode).name)
             putString(Key.AUTO_MODE, enumOr(s.optString("auto_mode"), autoMode).name)
-            putInt(Key.AUTO_DELAY, s.optInt("auto_delay_sec", screenOffDelaySec))
+            putInt(Key.AUTO_DELAY, s.optInt("auto_delay_sec", screenOffDelaySec).coerceAtLeast(0))
             putBoolean(Key.EXCEPT_CHARGING, s.optBoolean("except_charging", exceptCharging))
             putBoolean(Key.EXCEPT_NOTIFICATIONS, s.optBoolean("except_notifications", exceptNotifications))
             putBoolean(Key.EXCEPT_FOREGROUND, s.optBoolean("except_foreground", exceptForeground))

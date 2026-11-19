@@ -11,18 +11,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import kotlin.math.abs
 import kotlin.math.roundToInt
 
-private val DpiScales = listOf(0.7f, 0.8f, 0.9f, 1f, 1.1f, 1.2f, 1.3f, 1.5f)
+private val MIN_DISPLAY_PERCENT = (MIN_DPI_SCALE * 100).roundToInt()
+private val MAX_DISPLAY_PERCENT = (MAX_DPI_SCALE * 100).roundToInt()
+private const val DISPLAY_PERCENT_STEP = 5
 
-private enum class LayoutDialog { THEME, SLIDER, ICON, DPI }
+private val DISPLAY_PERCENTS = (MIN_DISPLAY_PERCENT..MAX_DISPLAY_PERCENT step DISPLAY_PERCENT_STEP).toList()
+
+private fun displayLabel(percent: Int) = if (percent == 100) "100% (Default)" else "$percent%"
+
+private enum class LayoutDialog { THEME, SLIDER, ICON, DISPLAY }
 
 @Composable
 fun ThemeLayoutScreen(vm: MainViewModel) {
     val ctx = LocalContext.current
-    val systemDpi = ctx.resources.displayMetrics.densityDpi
     var dialog by remember { mutableStateOf<LayoutDialog?>(null) }
+    val displayPercent = (vm.dpiScale * 100).roundToInt()
 
     SettingsPage(title = "Theme & layout", onBack = { vm.closeThemeLayout() }) {
         SectionLabel("Theme")
@@ -45,10 +50,10 @@ fun ThemeLayoutScreen(vm: MainViewModel) {
             onClick = { dialog = LayoutDialog.ICON },
         )
         SettingRow(
-            title = "App DPI",
-            subtitle = "${(systemDpi * vm.dpiScale).roundToInt()} dpi",
+            title = "Display size",
+            subtitle = displayLabel(displayPercent),
             divider = false,
-            onClick = { dialog = LayoutDialog.DPI },
+            onClick = { dialog = LayoutDialog.DISPLAY },
         )
 
         SectionLabel("Tabs")
@@ -87,15 +92,12 @@ fun ThemeLayoutScreen(vm: MainViewModel) {
             onDismiss = close,
             trailing = { AppIcon(ctx.packageName, it.sizeDp.dp) },
         )
-        LayoutDialog.DPI -> ChoiceDialog(
-            title = "Set app DPI",
-            options = DpiScales,
-            isSelected = { abs(vm.dpiScale - it) < 0.01f },
-            label = { scale ->
-                val dpi = (systemDpi * scale).roundToInt()
-                if (scale == 1f) "$dpi dpi (default)" else "$dpi dpi"
-            },
-            onPick = { vm.updateDpiScale(it); close() },
+        LayoutDialog.DISPLAY -> ChoiceDialog(
+            title = "Display size",
+            options = DISPLAY_PERCENTS,
+            isSelected = { it == displayPercent },
+            label = { displayLabel(it) },
+            onPick = { vm.updateDpiScale(it / 100f); close() },
             onDismiss = close,
         )
         null -> Unit
@@ -124,8 +126,8 @@ private fun <T> ChoiceDialog(
                     label = label(option),
                     selected = isSelected(option),
                     onClick = { onPick(option) },
-                    inkColor = FZ.c.settingsInk,
-                    mutedColor = FZ.c.settingsSecondary,
+                    inkColor = CeaseTheme.colors.settingsInk,
+                    mutedColor = CeaseTheme.colors.settingsSecondary,
                     trailing = { trailing(option) },
                 )
             }

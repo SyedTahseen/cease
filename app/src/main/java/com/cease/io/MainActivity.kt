@@ -10,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.core.view.WindowCompat
 
 class MainActivity : ComponentActivity() {
     private val vm: MainViewModel by lazy { sharedViewModel() }
@@ -31,7 +30,7 @@ class MainActivity : ComponentActivity() {
             }
 
             CeaseTheme(vm) {
-                val colors = FZ.c
+                val colors = CeaseTheme.colors
                 LaunchedEffect(panelFull, colors) { applyBars(panelFull, colors) }
                 if (!(vm.showSetup && !vm.setupDone)) {
                     SplitPanel(onDismiss = { finish() }, onFullChange = { panelFull = it }) {
@@ -43,11 +42,8 @@ class MainActivity : ComponentActivity() {
         handleLaunchIntent(intent)
     }
 
-    private fun applyBars(full: Boolean, c: CeaseColors) {
-        val controller = WindowCompat.getInsetsController(window, window.decorView)
-        controller.isAppearanceLightStatusBars = full && !c.isDark
-        controller.isAppearanceLightNavigationBars = !c.isDark
-    }
+    private fun applyBars(full: Boolean, c: CeaseColors) =
+        setBarIconAppearance(lightStatusBars = full && !c.isDark, lightNavigationBars = !c.isDark)
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -67,7 +63,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         super.onStop()
-
         if (!vm.anyPageOpen) vm.closeGridSearch()
     }
 

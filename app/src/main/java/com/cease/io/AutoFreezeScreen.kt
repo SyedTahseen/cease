@@ -61,8 +61,8 @@ fun AutoFreezeScreen(vm: MainViewModel) {
         Text(
             "Auto Freeze runs a small background service and freezes the apps in your list using root. " +
                 "Tap / Double Tap Home detection depends on your Android version and device.",
-            color = FZ.c.settingsSecondary,
-            fontSize = FZType.secondary,
+            color = CeaseTheme.colors.settingsSecondary,
+            style = Type.Small,
             modifier = Modifier.padding(16.dp),
         )
     }

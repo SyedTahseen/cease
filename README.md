@@ -61,7 +61,7 @@ Pick your apps once. After that, a single slide can freeze or force stop them al
 | 🔍 **Search** | Find your apps right inside the grid |
 | 📌 **Home screen shortcuts** | Pin a one-tap launcher for any frozen app |
 | 🎨 **Themes** | System, Light, Dark and Spark |
-| 🧩 **Your layout** | Slider on the left, right or center. Four icon sizes. Adjustable app DPI |
+| 🧩 **Your layout** | Slider on the left, right or center. Four icon sizes. Adjustable display size (80–130%) |
 | 💾 **Backup and restore** | Save all your settings, tabs and apps to a file |
 
 ## How to use it
@@ -115,12 +115,12 @@ Open Cease, then bar menu (⋮) → **Unfreeze all**.
 <details>
 <summary><b>Can I move my settings from the old Freezer app?</b></summary>
 
-Yes. Export a backup from Freezer and restore it in Cease. Cease uses a new app ID, so it installs alongside the old app and doesn't update it.
+Cease can't restore backups made by the old Freezer app. Cease uses a new app ID, so it installs alongside the old app and doesn't update it.
 </details>
 
 ## Build from source
 
-You need JDK 17 and Gradle 8.9 (or Android Studio).
+You need JDK 17 and Gradle 9.9.1 (or Android Studio), the same versions the CI workflow uses.
 
 ```bash
 gradle assembleRelease

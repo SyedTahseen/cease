@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -75,22 +76,16 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     var message by mutableStateOf<String?>(null)
 
     private var launching = false
+    private var refreshJob: Job? = null
 
     val anyPageOpen: Boolean
         get() = showSetup || showAutoFreeze || showThemeLayout || showSettings || showPicker
 
     val visibleItems: List<AppItem>
-        get() = if (tabsEnabled) items.filter { it.tabId == currentTabId } else items
+        get() = itemsForTab(currentTabId)
 
     var gridSearching by mutableStateOf(false); private set
     var gridQuery by mutableStateOf("")
-
-    val gridItems: List<AppItem>
-        get() {
-            val q = gridQuery.trim()
-            return if (!gridSearching || q.isEmpty()) visibleItems
-            else visibleItems.filter { it.matches(q) }
-        }
 
     private fun AppItem.matches(q: String) = label.contains(q, true) || packageName.contains(q, true)
 
@@ -111,12 +106,11 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     val inForceStopTab: Boolean get() = tabsEnabled && tabMode(currentTabId) == Mode.FORCE_STOP
 
-    private val protectedPackages: Set<String> by lazy {
-        val pm = getApplication<Application>().packageManager
-        val home = pm.homePackage()
-        setOfNotNull(
-            getApplication<Application>().packageName,
-            home,
+    private fun protectedPackages(): Set<String> {
+        val app = getApplication<Application>()
+        return setOfNotNull(
+            app.packageName,
+            app.packageManager.homePackage(),
             "android",
             "com.android.systemui",
             "com.android.settings",
@@ -142,23 +136,26 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun refreshList() {
-        viewModelScope.launch {
+        refreshJob?.cancel()
+        refreshJob = viewModelScope.launch {
             val pkgs = listPkgs.toList()
-            val resolved = withContext(Dispatchers.IO) { pkgs.mapNotNull { resolve(it) } }
+            val assignments = appTabs.toMap()
+            val resolved = withContext(Dispatchers.IO) { pkgs.mapNotNull { resolve(it, assignments) } }
             items = resolved.sortedBy { it.label.lowercase() }
             itemsLoaded = true
-            val alive = resolved.map { it.packageName }.toSet()
-            if (listPkgs.removeAll { it !in alive }) saveList()
+
+            val missing = pkgs.toSet() - resolved.map { it.packageName }.toSet()
+            if (missing.isNotEmpty() && listPkgs.removeAll(missing)) saveList()
             if (appTabs.keys.retainAll(listPkgs.toSet())) saveAppTabs()
         }
     }
 
-    private fun resolve(pkg: String): AppItem? {
+    private fun resolve(pkg: String, assignments: Map<String, String>): AppItem? {
         val pm = getApplication<Application>().packageManager
         return try {
             val info = pm.appInfo(pkg)
             val tabId = if (!tabsEnabled) DEFAULT_TAB
-                else appTabs[pkg]?.takeIf { id -> tabs.any { it.id == id } } ?: DEFAULT_TAB
+                else assignments[pkg]?.takeIf { id -> tabs.any { it.id == id } } ?: DEFAULT_TAB
             val mode = tabMode(tabId)
             AppItem(
                 packageName = pkg,
@@ -463,8 +460,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             allLoading = allApps.isEmpty()
             allApps = withContext(Dispatchers.IO) {
                 val pm = getApplication<Application>().packageManager
+                val blocked = protectedPackages()
                 pm.installedPackages()
-                    .filter { it.packageName !in protectedPackages && it.applicationInfo != null }
+                    .filter { it.packageName !in blocked && it.applicationInfo != null }
                     .map {
                         val ai = it.applicationInfo!!
                         AppItem(
@@ -485,7 +483,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun pickerApps(): List<AppItem> {
         var list = allApps.filter {
             (it.isSystem == showSystem) &&
-                (query.isBlank() || it.label.contains(query, true) || it.packageName.contains(query, true)) &&
+                (query.isBlank() || it.matches(query)) &&
                 (!onlyFrozen || it.isFrozen) &&
                 (!onlyNotFrozen || !it.isFrozen)
         }
@@ -537,29 +535,37 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         if (working || launching) return
         launching = true
         viewModelScope.launch {
-            if (item.isFrozen) {
-                val result = withContext(Dispatchers.IO) { RootShell.unfreeze(listOf(item.packageName)) }
-                if (!result.success) {
-                    launching = false
-                    onDone(false)
-                    message = result.failureText()
-                    return@launch
-                }
+            val launched = try {
+                unfreezeAndStart(item)
+            } finally {
+                launching = false
             }
-            val ctx = getApplication<Application>()
-            val launch = awaitLaunchIntent(item.packageName)
-            if (launch == null) {
-                message = "${item.label} can't be launched"
-                onDone(false)
-            } else {
-                launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                val noAnim = ActivityOptions.makeCustomAnimation(ctx, 0, 0).toBundle()
-                ctx.startActivity(launch, noAnim)
-                onDone(true)
-            }
-            launching = false
+            onDone(launched)
             refreshList()
         }
+    }
+
+    private suspend fun unfreezeAndStart(item: AppItem): Boolean {
+        if (item.isFrozen) {
+            val result = withContext(Dispatchers.IO) { RootShell.unfreeze(listOf(item.packageName)) }
+            if (!result.success) {
+                message = result.failureText()
+                return false
+            }
+        }
+        val ctx = getApplication<Application>()
+        val launch = awaitLaunchIntent(item.packageName)
+        if (launch != null) {
+            launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val noAnim = ActivityOptions.makeCustomAnimation(ctx, 0, 0).toBundle()
+            try {
+                ctx.startActivity(launch, noAnim)
+                return true
+            } catch (_: RuntimeException) {
+            }
+        }
+        message = "${item.label} can't be launched"
+        return false
     }
 
     private suspend fun awaitLaunchIntent(pkg: String): Intent? {
@@ -576,9 +582,13 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun launchByPackage(pkg: String, onDone: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val item = withContext(Dispatchers.IO) { resolve(pkg) }
+            val assignments = appTabs.toMap()
+            val item = withContext(Dispatchers.IO) { resolve(pkg, assignments) }
             if (item == null) {
                 message = "App is not installed"
+                onDone(false)
+            } else if (item.isFrozen && pkg !in listPkgs) {
+                message = "${item.label} is not in your Cease list"
                 onDone(false)
             } else {
                 launchApp(item, onDone)

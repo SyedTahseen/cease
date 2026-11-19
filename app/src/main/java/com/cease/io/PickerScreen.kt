@@ -47,7 +47,7 @@ fun PickerScreen(vm: MainViewModel) {
     val shown = vm.pickerApps()
     var sortMenu by remember { mutableStateOf(false) }
     val snackbar = rememberMessageSnackbar(vm)
-    val colors = FZ.c
+    val colors = CeaseTheme.colors
 
     Scaffold(containerColor = colors.row, snackbarHost = { SnackbarHost(snackbar) }) { pad ->
         Column(Modifier.padding(pad).fillMaxSize()) {
@@ -122,14 +122,14 @@ fun PickerScreen(vm: MainViewModel) {
                                 Text(
                                     app.label,
                                     color = colors.rowTitle,
-                                    fontSize = FZType.body,
+                                    style = Type.Body,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                 )
                                 Text(
                                     app.packageName,
                                     color = colors.rowSubtitle,
-                                    fontSize = FZType.secondary,
+                                    style = Type.Small,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                 )
@@ -156,7 +156,7 @@ private fun RunningBadge(modifier: Modifier = Modifier) {
 
 @Composable
 private fun SystemWarningPanel(vm: MainViewModel) {
-    val colors = FZ.c
+    val colors = CeaseTheme.colors
     var dontShow by remember { mutableStateOf(false) }
     Column(
         Modifier.fillMaxSize().padding(horizontal = 32.dp),
@@ -167,7 +167,7 @@ private fun SystemWarningPanel(vm: MainViewModel) {
         Text(
             "Freeze system apps may break your devices. Do at your own risk.",
             color = colors.rowSubtitle,
-            fontSize = FZType.title,
+            style = Type.Subheadline,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 24.dp),
         )
@@ -176,7 +176,7 @@ private fun SystemWarningPanel(vm: MainViewModel) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Checkbox(checked = dontShow, onCheckedChange = { dontShow = it }, colors = ceaseCheckboxColors())
-            Text("Don't show again", color = colors.rowTitle, fontSize = FZType.body)
+            Text("Don't show again", color = colors.rowTitle, style = Type.Body)
         }
         DialogButton("Got it", { vm.dismissSystemWarning(dontShow) })
     }
@@ -184,7 +184,7 @@ private fun SystemWarningPanel(vm: MainViewModel) {
 
 @Composable
 private fun MenuHeader(title: String) {
-    Text(title, color = FZ.c.accent, fontSize = FZType.secondary, modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp))
+    Text(title, color = CeaseTheme.colors.accent, style = Type.Small, modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp))
 }
 
 @Composable
@@ -209,12 +209,12 @@ private fun CheckItem(text: String, checked: Boolean, onClick: () -> Unit) {
 
 @Composable
 private fun PickerTab(title: String, selected: Boolean, onClick: () -> Unit) {
-    val colors = FZ.c
+    val colors = CeaseTheme.colors
     Column(Modifier.clickable(onClick = onClick).padding(end = 24.dp)) {
         Column(Modifier.width(IntrinsicSize.Max)) {
             Text(
                 title,
-                fontSize = FZType.body,
+                style = Type.Body,
                 color = if (selected) colors.pickerTabSelected else colors.pickerTabIdle,
                 modifier = Modifier.padding(vertical = 12.dp),
             )
@@ -230,7 +230,7 @@ private fun PickerTab(title: String, selected: Boolean, onClick: () -> Unit) {
 
 @Composable
 private fun SortGlyph() {
-    val ink = FZ.c.barIcon
+    val ink = CeaseTheme.colors.barIcon
     Column(verticalArrangement = Arrangement.spacedBy(5.dp), horizontalAlignment = Alignment.Start) {
         Box(Modifier.width(24.dp).height(2.dp).background(ink))
         Box(Modifier.width(17.dp).height(2.dp).background(ink))

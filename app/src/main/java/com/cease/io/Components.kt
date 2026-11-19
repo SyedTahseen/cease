@@ -22,6 +22,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.SnackbarHostState
@@ -42,7 +43,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +60,7 @@ fun AppIcon(pkg: String, size: Dp, modifier: Modifier = Modifier) {
     if (bmp != null) {
         Image(bitmap = bmp, contentDescription = null, modifier = modifier.size(size))
     } else {
-        Box(modifier.size(size).background(FZ.c.iconPlaceholder, RoundedCornerShape(12.dp)))
+        Box(modifier.size(size).background(CeaseTheme.colors.iconPlaceholder, RoundedCornerShape(12.dp)))
     }
 }
 
@@ -81,7 +81,7 @@ fun CeaseSearchField(
     onClose: () -> Unit,
     autoFocus: Boolean = false,
 ) {
-    val colors = FZ.c
+    val colors = CeaseTheme.colors
     val focus = remember { FocusRequester() }
     if (autoFocus) LaunchedEffect(Unit) { focus.requestFocus() }
 
@@ -95,13 +95,13 @@ fun CeaseSearchField(
             Icon(Icons.Default.Search, contentDescription = null, tint = colors.searchIcon)
             Box(Modifier.weight(1f).padding(start = 12.dp), contentAlignment = Alignment.CenterStart) {
                 if (value.isEmpty()) {
-                    Text(placeholder, color = colors.searchHint, fontSize = FZType.body)
+                    Text(placeholder, color = colors.searchHint, style = Type.Body)
                 }
                 BasicTextField(
                     value = value,
                     onValueChange = onValueChange,
                     singleLine = true,
-                    textStyle = TextStyle(color = colors.searchInk, fontSize = FZType.body),
+                    textStyle = Type.Body.copy(color = colors.searchInk),
                     cursorBrush = SolidColor(colors.accent),
                     modifier = Modifier.fillMaxWidth().focusRequester(focus),
                 )
@@ -124,7 +124,7 @@ fun CeaseMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
         shape = CeaseShape,
-        containerColor = FZ.c.menu,
+        containerColor = CeaseTheme.colors.menu,
         tonalElevation = 0.dp,
         shadowElevation = 8.dp,
         content = content,
@@ -134,19 +134,19 @@ fun CeaseMenu(
 @Composable
 fun CeaseMenuItem(text: @Composable () -> Unit, onClick: () -> Unit) {
     DropdownMenuItem(
-        text = text,
+        text = { ProvideTextStyle(Type.Body) { text() } },
         onClick = onClick,
-        colors = MenuDefaults.itemColors(textColor = FZ.c.menuInk),
+        colors = MenuDefaults.itemColors(textColor = CeaseTheme.colors.menuInk),
     )
 }
 
 @Composable
-fun DialogButton(text: String, onClick: () -> Unit, color: Color = FZ.c.accent) {
+fun DialogButton(text: String, onClick: () -> Unit, color: Color = CeaseTheme.colors.accent) {
     TextButton(
         onClick = onClick,
         shape = CeaseShape,
         colors = ButtonDefaults.textButtonColors(contentColor = color),
-    ) { Text(text.uppercase()) }
+    ) { Text(text.uppercase(), style = Type.ButtonSmall) }
 }
 
 @Composable
@@ -154,8 +154,8 @@ fun CeaseDialog(
     onDismiss: () -> Unit,
     title: String? = null,
     settingsStyle: Boolean = false,
-    containerColor: Color = if (settingsStyle) FZ.c.settingsDialog else FZ.c.menu,
-    inkColor: Color = if (settingsStyle) FZ.c.settingsInk else FZ.c.menuInk,
+    containerColor: Color = if (settingsStyle) CeaseTheme.colors.settingsDialog else CeaseTheme.colors.menu,
+    inkColor: Color = if (settingsStyle) CeaseTheme.colors.settingsInk else CeaseTheme.colors.menuInk,
     confirmButton: @Composable () -> Unit = {},
     dismissButton: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
@@ -165,7 +165,7 @@ fun CeaseDialog(
         shape = CeaseShape,
         containerColor = containerColor,
         tonalElevation = 0.dp,
-        title = title?.let { { Text(it, color = inkColor) } },
+        title = title?.let { { Text(it, color = inkColor, style = Type.Heading) } },
         text = content,
         confirmButton = confirmButton,
         dismissButton = dismissButton,
@@ -187,7 +187,7 @@ fun CeaseConfirmDialog(
         confirmButton = { DialogButton(confirmLabel, onConfirm) },
         dismissButton = { DialogButton(dismissLabel, onDismiss) },
     ) {
-        Text(message, color = if (settingsStyle) FZ.c.settingsInk else FZ.c.menuInk, fontSize = FZType.body)
+        Text(message, color = if (settingsStyle) CeaseTheme.colors.settingsInk else CeaseTheme.colors.menuInk, style = Type.Body)
     }
 }
 
@@ -219,9 +219,9 @@ fun RadioRow(
         RadioButton(
             selected = selected,
             onClick = onClick,
-            colors = RadioButtonDefaults.colors(selectedColor = FZ.c.accent, unselectedColor = mutedColor),
+            colors = RadioButtonDefaults.colors(selectedColor = CeaseTheme.colors.accent, unselectedColor = mutedColor),
         )
-        Text(label, color = inkColor, fontSize = FZType.body, modifier = Modifier.weight(1f).padding(start = 8.dp))
+        Text(label, color = inkColor, style = Type.Body, modifier = Modifier.weight(1f).padding(start = 8.dp))
         trailing()
     }
 }

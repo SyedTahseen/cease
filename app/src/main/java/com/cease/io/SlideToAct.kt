@@ -1,11 +1,11 @@
 package com.cease.io
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -70,7 +70,7 @@ fun SlideToAct(
     }
     val right = style == SliderStyle.RIGHT
     val sign = if (right) -1 else 1
-    val colors = FZ.c
+    val colors = CeaseTheme.colors
     val trackHeight = 58.dp
     val density = LocalDensity.current
     val thumbPx = with(density) { trackHeight.toPx() }
@@ -99,7 +99,7 @@ fun SlideToAct(
         Text(
             text = label,
             color = colors.barInk,
-            fontSize = FZType.title,
+            style = Type.Subheadline,
             modifier = Modifier
                 .align(Alignment.Center)
                 .alpha((1f - progress * 1.6f).coerceIn(0f, 1f))
@@ -150,7 +150,7 @@ private fun CenterFreezeButton(
     onLabelClick: (() -> Unit)?,
     trailing: @Composable () -> Unit,
 ) {
-    val colors = FZ.c
+    val colors = CeaseTheme.colors
     val barHeight = 68.dp
     val buttonSize = 64.dp
     val rise = CenterButtonRise
@@ -168,7 +168,7 @@ private fun CenterFreezeButton(
             Text(
                 text = label,
                 color = colors.barInk,
-                fontSize = FZType.title,
+                style = Type.Subheadline,
                 modifier = Modifier.labelClickable(onLabelClick).padding(horizontal = 8.dp, vertical = 14.dp),
             )
         }

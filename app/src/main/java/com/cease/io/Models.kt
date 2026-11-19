@@ -1,6 +1,7 @@
 package com.cease.io
 
 import android.content.pm.ApplicationInfo
+import androidx.compose.ui.text.TextStyle
 
 const val DEFAULT_TAB = "default"
 
@@ -22,17 +23,24 @@ enum class Mode(val label: String) {
     FORCE_STOP("Force stop"),
 }
 
+enum class ThemeMode(val label: String) {
+    SYSTEM("System default"),
+    LIGHT("Light"),
+    DARK("Dark"),
+    SPARK("Spark"),
+}
+
 enum class SliderStyle(val label: String) {
     LEFT("Left"),
     RIGHT("Right"),
     CENTER("Center (tap button)"),
 }
 
-enum class IconSizeOption(val label: String, val sizeDp: Int, val columns: Int, val labelSp: Int) {
-    LARGE("Large", 64, 4, 13),
-    NORMAL("Normal", 56, 4, 12),
-    SMALL("Small", 48, 5, 11),
-    TINY("Tiny", 40, 6, 10),
+enum class IconSizeOption(val label: String, val sizeDp: Int, val columns: Int, val labelStyle: TextStyle, val starDp: Int) {
+    LARGE("Large", 64, 4, Type.Caption, 14),
+    NORMAL("Normal", 56, 4, Type.Caption, 13),
+    SMALL("Small", 48, 5, Type.Caption, 12),
+    TINY("Tiny", 40, 6, Type.Overline, 11),
 }
 
 data class TabItem(val id: String, val name: String, val mode: Mode)

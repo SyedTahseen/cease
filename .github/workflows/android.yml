@@ -28,6 +28,9 @@ jobs:
         with:
           gradle-version: 9.9.1
 
+      - name: Run unit tests
+        run: gradle testDebugUnitTest --stacktrace
+
       - name: Decode keystore
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}

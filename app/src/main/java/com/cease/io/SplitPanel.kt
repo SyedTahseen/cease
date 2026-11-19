@@ -11,17 +11,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -81,7 +81,6 @@ fun SplitPanel(
                 .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { dismiss() },
         )
 
-        // The window no longer resizes for the keyboard (edge-to-edge), so shrink the panel area instead.
         BoxWithConstraints(Modifier.fillMaxSize().imePadding()) {
             val total by rememberUpdatedState(constraints.maxHeight.toFloat())
             val statusBarPx = WindowInsets.statusBars.getTop(density)
@@ -163,11 +162,10 @@ fun SplitPanel(
                             RoundedCornerShape(topStart = r, topEnd = r)
                         },
                     )
-                    .background(FZ.c.panel)
+                    .background(CeaseTheme.colors.panel)
                     .pointerInput(Unit) { detectTapGestures { } }
                     .nestedScroll(connection),
             ) {
-                // Only the part of the panel that actually reaches the status bar needs top padding.
                 val topPad = with(density) { (statusBarPx - total * (1f - fraction)).coerceAtLeast(0f).toDp() }
                 Box(
                     Modifier
@@ -177,7 +175,7 @@ fun SplitPanel(
                         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
                         .consumeWindowInsets(WindowInsets.safeDrawing),
                 ) { content() }
-                Spacer(Modifier.fillMaxWidth().background(FZ.c.dock).navigationBarsPadding())
+                Spacer(Modifier.fillMaxWidth().background(CeaseTheme.colors.dock).navigationBarsPadding())
             }
         }
     }

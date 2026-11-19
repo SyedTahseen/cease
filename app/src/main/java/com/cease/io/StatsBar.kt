@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -72,7 +71,7 @@ private fun gb(bytes: Long) = String.format(Locale.US, "%.1f GB", bytes / BYTES_
 @Composable
 fun StatsBar(apps: List<AppItem>, modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val colors = FZ.c
+    val colors = CeaseTheme.colors
     var ram by remember { mutableStateOf(readRam(context)) }
     LaunchedEffect(Unit) {
         while (true) {
@@ -90,11 +89,11 @@ fun StatsBar(apps: List<AppItem>, modifier: Modifier = Modifier) {
             Text(
                 "RAM  ${gb(ram.used)} used · ${gb(ram.free)} free",
                 color = colors.rowSubtitle,
-                fontSize = 12.sp,
+                style = Type.Caption,
                 maxLines = 1,
                 modifier = Modifier.weight(1f),
             )
-            Text("${ram.percent}%", color = colors.rowTitle, fontSize = 12.sp, maxLines = 1)
+            Text("${ram.percent}%", color = colors.rowTitle, style = Type.Caption, maxLines = 1)
         }
         LinearProgressIndicator(
             progress = { ram.percent / 100f },
@@ -120,8 +119,8 @@ private fun StatChip(label: String, count: Int, dot: Color, modifier: Modifier =
         Box(Modifier.size(7.dp).background(dot, CircleShape))
         Text(
             "$label $count",
-            color = FZ.c.rowSubtitle,
-            fontSize = 12.sp,
+            color = CeaseTheme.colors.rowSubtitle,
+            style = Type.Caption,
             maxLines = 1,
             modifier = Modifier.padding(start = 6.dp),
         )

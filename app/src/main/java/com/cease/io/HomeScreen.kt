@@ -1,7 +1,6 @@
 package com.cease.io
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -11,16 +10,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
@@ -37,23 +35,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(vm: MainViewModel, onClose: () -> Unit) {
     val snackbar = rememberMessageSnackbar(vm)
     val scope = rememberCoroutineScope()
     var menuOpen by remember { mutableStateOf(false) }
-    var removing by remember { mutableStateOf<AppItem?>(null) }
+    var sheetApp by remember { mutableStateOf<AppItem?>(null) }
     var confirmUnfreeze by remember { mutableStateOf(false) }
 
     BackHandler(enabled = vm.gridSearching) { vm.closeGridSearch() }
@@ -68,7 +65,7 @@ fun HomeScreen(vm: MainViewModel, onClose: () -> Unit) {
     val label = if (vm.rootOk == false) "Root access required" else "APPS"
 
     Scaffold(
-        containerColor = FZ.c.panel,
+        containerColor = CeaseTheme.colors.panel,
         snackbarHost = { SnackbarHost(snackbar) },
         bottomBar = {
             SlideToAct(
@@ -87,11 +84,11 @@ fun HomeScreen(vm: MainViewModel, onClose: () -> Unit) {
                 },
                 trailing = {
                     IconButton(onClick = { if (vm.gridSearching) vm.closeGridSearch() else vm.openGridSearch() }) {
-                        Icon(Icons.Default.Search, contentDescription = "Search apps in grid", tint = FZ.c.barIcon)
+                        Icon(Icons.Default.Search, contentDescription = "Search apps in grid", tint = CeaseTheme.colors.barIcon)
                     }
                     Box {
                         IconButton(onClick = { menuOpen = true }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = FZ.c.barIcon)
+                            Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = CeaseTheme.colors.barIcon)
                         }
                         CeaseMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                             if (!vm.inForceStopTab) {
@@ -122,7 +119,7 @@ fun HomeScreen(vm: MainViewModel, onClose: () -> Unit) {
                 .padding(top = pad.calculateTopPadding(), bottom = bottomPad)
                 .fillMaxSize(),
         ) {
-            if (vm.working) LinearProgressIndicator(Modifier.fillMaxWidth(), color = FZ.c.accent, trackColor = FZ.c.bar)
+            if (vm.working) LinearProgressIndicator(Modifier.fillMaxWidth(), color = CeaseTheme.colors.accent, trackColor = CeaseTheme.colors.bar)
 
             if (vm.gridSearching) {
                 CeaseSearchField(
@@ -188,13 +185,13 @@ fun HomeScreen(vm: MainViewModel, onClose: () -> Unit) {
                             } else {
                                 "No apps in this tab. Tap anywhere on this screen or the bar below to add apps."
                             },
-                            color = FZ.c.emptyHint,
+                            color = CeaseTheme.colors.emptyHint,
                             textAlign = TextAlign.Center,
                         )
                     }
                 } else if (shown.isEmpty()) {
                     Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
-                        Text("No matching apps", color = FZ.c.emptyHint, textAlign = TextAlign.Center)
+                        Text("No matching apps", color = CeaseTheme.colors.emptyHint, textAlign = TextAlign.Center)
                     }
                 } else {
                     LazyVerticalGrid(
@@ -209,7 +206,7 @@ fun HomeScreen(vm: MainViewModel, onClose: () -> Unit) {
                                 app = app,
                                 iconSize = vm.iconSize,
                                 onClick = { vm.launchApp(app) },
-                                onLongClick = { removing = app },
+                                onLongClick = { sheetApp = app },
                             )
                         }
                     }
@@ -218,8 +215,8 @@ fun HomeScreen(vm: MainViewModel, onClose: () -> Unit) {
         }
     }
 
-    removing?.let { app ->
-        AppActionSheet(vm, app) { removing = null }
+    sheetApp?.let { app ->
+        AppActionSheet(vm, app) { sheetApp = null }
     }
 
     if (confirmUnfreeze) {
@@ -227,10 +224,9 @@ fun HomeScreen(vm: MainViewModel, onClose: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun AppTile(app: AppItem, iconSize: IconSizeOption, onClick: () -> Unit, onLongClick: () -> Unit) {
-    val colors = FZ.c
+    val colors = CeaseTheme.colors
     Column(
         Modifier.fillMaxWidth().combinedClickable(onClick = onClick, onLongClick = onLongClick),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -242,13 +238,13 @@ private fun AppTile(app: AppItem, iconSize: IconSizeOption, onClick: () -> Unit,
             horizontalArrangement = Arrangement.Center,
         ) {
             if (app.isFrozen) {
-                CeaseStarIcon(color = colors.tabAccent, iconSize = (iconSize.labelSp + 1).dp)
+                CeaseStarIcon(color = colors.tabAccent, iconSize = iconSize.starDp.dp)
                 Spacer(Modifier.width(3.dp))
             }
             Text(
                 text = app.label,
                 color = colors.appLabel,
-                fontSize = iconSize.labelSp.sp,
+                style = iconSize.labelStyle,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f, fill = false),
