@@ -8,6 +8,17 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -62,75 +73,7 @@ fun SplitPanel(
     val isFull = fraction >= 0.97f
     LaunchedEffect(isFull) { onFullChange(isFull) }
 
-    BoxWithConstraints(Modifier.fillMaxSize()) {
-        val total by rememberUpdatedState(constraints.maxHeight.toFloat())
-
-        fun lowerBound() = if (state.startedAtHalf == true) 0f else HALF
-
-        fun settle(velocityY: Float) {
-            val f = fraction
-            if (f < HALF - 0.001f) {
-                val close = f < CLOSE_BELOW || velocityY > 800f
-                state.cancelAnimation()
-                state.animation = scope.launch {
-                    animate(f, if (close) 0f else HALF) { v, _ -> fraction = v }
-                    if (close) dismiss()
-                }
-                return
-            }
-            if (f <= HALF + 0.001f || f >= FULL) return
-            val target = when {
-                velocityY < -400f -> FULL
-                velocityY > 400f -> HALF
-                f > 0.825f -> FULL
-                else -> HALF
-            }
-            state.cancelAnimation()
-            state.animation = scope.launch { animate(f, target) { v, _ -> fraction = v } }
-        }
-
-        fun drag(dy: Float): Float {
-            val old = fraction
-            val new = (old - dy / total).coerceIn(lowerBound(), FULL)
-            fraction = new
-            return (old - new) * total
-        }
-
-        val connection = remember {
-            object : NestedScrollConnection {
-                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                    if (source == NestedScrollSource.UserInput && state.startedAtHalf == null) state.startedAtHalf = fraction <= HALF + 0.001f
-                    if (available.y < 0f && fraction < FULL) {
-                        state.cancelAnimation()
-                        return Offset(0f, drag(available.y))
-                    }
-                    return Offset.Zero
-                }
-
-                override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
-                    val canShrink = fraction > lowerBound() &&
-                        (fraction > HALF || source == NestedScrollSource.UserInput)
-                    if (available.y > 0f && canShrink) {
-                        state.cancelAnimation()
-                        return Offset(0f, drag(available.y))
-                    }
-                    return Offset.Zero
-                }
-
-                override suspend fun onPreFling(available: Velocity): Velocity {
-                    state.resetGesture()
-                    settle(available.y)
-                    return Velocity.Zero
-                }
-
-                override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
-                    state.resetGesture()
-                    settle(available.y)
-                    return Velocity.Zero
-                }
-            }
-        }
-
+    Box(Modifier.fillMaxSize()) {
         Box(
             Modifier
                 .fillMaxSize()
@@ -138,22 +81,104 @@ fun SplitPanel(
                 .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { dismiss() },
         )
 
-        Column(
-            Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(with(density) { (total * fraction).toDp() })
-                .clip(
-                    with(density) {
-                        val r = (70f * (1f - ((fraction - 0.9f) / 0.1f).coerceIn(0f, 1f))).toDp()
-                        RoundedCornerShape(topStart = r, topEnd = r)
-                    },
-                )
-                .background(FZ.c.panel)
-                .pointerInput(Unit) { detectTapGestures { } }
-                .nestedScroll(connection),
-        ) {
-            Box(Modifier.weight(1f).fillMaxWidth()) { content() }
+        // The window no longer resizes for the keyboard (edge-to-edge), so shrink the panel area instead.
+        BoxWithConstraints(Modifier.fillMaxSize().imePadding()) {
+            val total by rememberUpdatedState(constraints.maxHeight.toFloat())
+            val statusBarPx = WindowInsets.statusBars.getTop(density)
+
+            fun lowerBound() = if (state.startedAtHalf == true) 0f else HALF
+
+            fun settle(velocityY: Float) {
+                val f = fraction
+                if (f < HALF - 0.001f) {
+                    val close = f < CLOSE_BELOW || velocityY > 800f
+                    state.cancelAnimation()
+                    state.animation = scope.launch {
+                        animate(f, if (close) 0f else HALF) { v, _ -> fraction = v }
+                        if (close) dismiss()
+                    }
+                    return
+                }
+                if (f <= HALF + 0.001f || f >= FULL) return
+                val target = when {
+                    velocityY < -400f -> FULL
+                    velocityY > 400f -> HALF
+                    f > 0.825f -> FULL
+                    else -> HALF
+                }
+                state.cancelAnimation()
+                state.animation = scope.launch { animate(f, target) { v, _ -> fraction = v } }
+            }
+
+            fun drag(dy: Float): Float {
+                val old = fraction
+                val new = (old - dy / total).coerceIn(lowerBound(), FULL)
+                fraction = new
+                return (old - new) * total
+            }
+
+            val connection = remember {
+                object : NestedScrollConnection {
+                    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                        if (source == NestedScrollSource.UserInput && state.startedAtHalf == null) state.startedAtHalf = fraction <= HALF + 0.001f
+                        if (available.y < 0f && fraction < FULL) {
+                            state.cancelAnimation()
+                            return Offset(0f, drag(available.y))
+                        }
+                        return Offset.Zero
+                    }
+
+                    override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+                        val canShrink = fraction > lowerBound() &&
+                            (fraction > HALF || source == NestedScrollSource.UserInput)
+                        if (available.y > 0f && canShrink) {
+                            state.cancelAnimation()
+                            return Offset(0f, drag(available.y))
+                        }
+                        return Offset.Zero
+                    }
+
+                    override suspend fun onPreFling(available: Velocity): Velocity {
+                        state.resetGesture()
+                        settle(available.y)
+                        return Velocity.Zero
+                    }
+
+                    override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+                        state.resetGesture()
+                        settle(available.y)
+                        return Velocity.Zero
+                    }
+                }
+            }
+
+            Column(
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(with(density) { (total * fraction).toDp() })
+                    .clip(
+                        with(density) {
+                            val r = (70f * (1f - ((fraction - 0.9f) / 0.1f).coerceIn(0f, 1f))).toDp()
+                            RoundedCornerShape(topStart = r, topEnd = r)
+                        },
+                    )
+                    .background(FZ.c.panel)
+                    .pointerInput(Unit) { detectTapGestures { } }
+                    .nestedScroll(connection),
+            ) {
+                // Only the part of the panel that actually reaches the status bar needs top padding.
+                val topPad = with(density) { (statusBarPx - total * (1f - fraction)).coerceAtLeast(0f).toDp() }
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(top = topPad)
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                        .consumeWindowInsets(WindowInsets.safeDrawing),
+                ) { content() }
+                Spacer(Modifier.fillMaxWidth().background(FZ.c.dock).navigationBarsPadding())
+            }
         }
     }
 }

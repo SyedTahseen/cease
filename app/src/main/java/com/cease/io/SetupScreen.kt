@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -87,7 +88,9 @@ fun SetupScreen(vm: MainViewModel) {
     }
     Box(Modifier.fillMaxSize().background(SetupBlue)) {
         Snowfall()
-        if (vm.setupPage == 0 && !vm.setupDone) WelcomePage(vm) else ChecklistPage(vm)
+        Box(Modifier.fillMaxSize().safeDrawingPadding()) {
+            if (vm.setupPage == 0 && !vm.setupDone) WelcomePage(vm) else ChecklistPage(vm)
+        }
     }
 }
 

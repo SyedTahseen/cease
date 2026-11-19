@@ -26,6 +26,7 @@ class AutoFreezeService : Service() {
     private val freezeTask = Runnable { runFreeze() }
 
     private val receiver = object : BroadcastReceiver() {
+        @Suppress("DEPRECATION") // ACTION_CLOSE_SYSTEM_DIALOGS "homekey" is the only Home signal available here
         override fun onReceive(context: Context, intent: Intent) {
             val prefs = AppPrefs(context)
             when (intent.action) {
@@ -40,6 +41,7 @@ class AutoFreezeService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    @Suppress("DEPRECATION")
     override fun onCreate() {
         super.onCreate()
         createChannel()
