@@ -14,8 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 fun SettingsScreen(vm: MainViewModel) {
     val ctx = LocalContext.current
     val version = remember {
-        @Suppress("DEPRECATION")
-        runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull().orEmpty()
+        runCatching { ctx.packageManager.packageInfo(ctx.packageName).versionName }.getOrNull().orEmpty()
     }
     var confirmUnfreeze by remember { mutableStateOf(false) }
     var pendingRestore by remember { mutableStateOf<Uri?>(null) }

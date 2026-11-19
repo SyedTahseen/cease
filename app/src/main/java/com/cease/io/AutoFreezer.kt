@@ -45,7 +45,7 @@ object AutoFreezer {
 
     private fun needsAction(pm: PackageManager, pkg: String, mode: Mode): Boolean {
         val info = try {
-            pm.getApplicationInfo(pkg, 0)
+            pm.appInfo(pkg)
         } catch (e: PackageManager.NameNotFoundException) {
             return false
         }

@@ -113,8 +113,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private val protectedPackages: Set<String> by lazy {
         val pm = getApplication<Application>().packageManager
-        val home = pm.resolveActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0)
-            ?.activityInfo?.packageName
+        val home = pm.homePackage()
         setOfNotNull(
             getApplication<Application>().packageName,
             home,
@@ -157,7 +156,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private fun resolve(pkg: String): AppItem? {
         val pm = getApplication<Application>().packageManager
         return try {
-            val info = pm.getApplicationInfo(pkg, 0)
+            val info = pm.appInfo(pkg)
             val tabId = if (!tabsEnabled) DEFAULT_TAB
                 else appTabs[pkg]?.takeIf { id -> tabs.any { it.id == id } } ?: DEFAULT_TAB
             val mode = tabMode(tabId)
@@ -464,8 +463,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             allLoading = allApps.isEmpty()
             allApps = withContext(Dispatchers.IO) {
                 val pm = getApplication<Application>().packageManager
-                @Suppress("DEPRECATION")
-                pm.getInstalledPackages(0)
+                pm.installedPackages()
                     .filter { it.packageName !in protectedPackages && it.applicationInfo != null }
                     .map {
                         val ai = it.applicationInfo!!
